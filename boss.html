@@ -2,120 +2,141 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Car Count Live</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--ink:#16202a;--mut:#5d6b78;--line:#dfe4ea;--acc:#2f7d32;--accbg:#e4f2e5;--warn:#b26a00;--warnbg:#fff1d6;--bad:#b3261e;--badbg:#fde4e2;--blue:#1f5fbf}
-@media(prefers-color-scheme:dark){:root{--bg:#10161c;--card:#19212a;--ink:#e8eef4;--mut:#9aa8b6;--line:#2a3541;--acc:#6fcf74;--accbg:#1c3a20;--warn:#f0b050;--warnbg:#3a2c10;--bad:#ff8a80;--badbg:#3d1b18;--blue:#7fb2ff}}
+:root{--bg:#f1f3f6;--card:#fff;--ink:#16202a;--mut:#5d6b78;--line:#dfe4ea;--acc:#2f7d32;--accbg:#e4f2e5;--warn:#8a5a00;--warnbg:#fff1d6;--blue:#1f5fbf;--e0:#dde3ea;--e1:#eceff3;--blk:#9aa3ad}
+@media(prefers-color-scheme:dark){:root{--bg:#10161c;--card:#19212a;--ink:#e8eef4;--mut:#9aa8b6;--line:#2a3541;--acc:#6fcf74;--accbg:#1c3a20;--warn:#f0b050;--warnbg:#3a2c10;--blue:#7fb2ff;--e0:#2b3642;--e1:#232d38;--blk:#59636e}}
 *{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(14px,env(safe-area-inset-top)) 16px 40px}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
 main{max-width:760px;margin:0 auto}
-header{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;justify-content:space-between;margin:4px 0 14px}
-h1{font-size:22px;margin:0;letter-spacing:.2px}
-.sub{color:var(--mut);font-size:14px}
-.chip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:13px;font-weight:600;background:var(--line);color:var(--ink)}
-.chip.go{background:var(--accbg);color:var(--acc)}.chip.pz{background:var(--warnbg);color:var(--warn)}.chip.done{background:var(--accbg);color:var(--acc)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 12px}
-.big{display:flex;gap:12px}
-.big>div{flex:1}
-.num{font-size:44px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-.lab{color:var(--mut);font-size:13px;margin-top:4px}
-.bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:14px 0 4px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+h1{font-size:22px;margin:0}.sub{color:var(--mut);font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:13px;font-weight:600;background:var(--line);white-space:nowrap}
+.chip:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.chip.go{background:var(--accbg);color:var(--acc)}.chip.go:before{background:var(--acc)}
+.chip.pz{background:var(--warnbg);color:var(--warn)}.chip.pz:before{background:var(--warn)}
+.prog{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;color:var(--mut)}
+.prog b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:6px 0 0}
 .bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .6s}
-.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 @media(min-width:560px){.tiles{grid-template-columns:repeat(3,1fr)}}
-.t{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-.t b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.t span{color:var(--mut);font-size:12.5px}
-h2{font-size:15px;margin:18px 0 8px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.lot{margin:0 0 12px}.lot h3{font-size:15px;margin:0 0 6px}
-.rows{display:flex;flex-wrap:wrap;gap:6px}
-.r{min-width:86px;flex:1 1 86px;max-width:150px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--card)}
-.r b{font-size:15px}.r span{display:block;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-.r.full{background:var(--accbg);border-color:transparent}.r.full span{color:var(--acc);font-weight:600}
-.r.part{border-color:var(--blue)}
-.map{display:block;width:100%;height:auto;border-radius:8px;background:var(--card)}
-.mapw{margin:0 0 8px;overflow-x:auto}
-.req{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.t{background:var(--bg);border-radius:12px;padding:11px 12px}
+.t span{display:block;color:var(--mut);font-size:13px}
+.t b{display:block;font-size:26px;line-height:1.15;font-variant-numeric:tabular-nums}
+#stale{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--warnbg);color:var(--warn);font-size:14px}
+#stale.on{display:block}
+h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.card .hh small{color:var(--mut);font-size:13px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--mut);font-size:13px;margin-top:8px}
+.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto}
+.mapw{overflow-x:auto}.map{display:block;width:100%;border-radius:8px}
+.list{margin-top:10px}
+.li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--line)}
+.li .cb{width:20px;height:20px;border:2px solid var(--mut);border-radius:5px;flex:0 0 20px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;color:#fff}
+.li.full .cb{background:var(--acc);border-color:var(--acc)}
+.li b{flex:1}.li span{color:var(--mut);font-variant-numeric:tabular-nums}
+.li .tag{font-size:12px;font-weight:600;color:var(--blue);border:1px solid var(--blue);border-radius:99px;padding:1px 8px}
+.li.full span{color:var(--acc);font-weight:600}
+.req{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:4px}
 button{font:inherit;font-weight:600;padding:12px 18px;border-radius:12px;border:0;background:var(--blue);color:#fff;min-height:46px}
 button:disabled{opacity:.55}
-#stale{display:none;margin:0 0 12px;padding:10px 12px;border-radius:10px;background:var(--warnbg);color:var(--warn);font-size:14px}
-#stale.on{display:block}
 .msg{font-size:14px;color:var(--mut)}
-.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.empty{text-align:center;color:var(--mut);padding:30px 8px}
+.foot{color:var(--mut);font-size:13px;text-align:center;margin-top:14px}
 </style></head><body><main>
-<header><div><h1 id="ttl">Car count</h1><div class="sub" id="sub"></div></div><span class="chip" id="st">Connecting…</span></header>
-<div id="stale"></div>
 <div id="body"><div class="card empty">Connecting to the count…</div></div>
 <div class="req"><button id="rq">Request update</button><span class="msg" id="rqm"></span></div>
-<p class="sub" id="upd" style="margin-top:14px"></p>
+<p class="foot" id="upd"></p>
 </main>
 <script>
-/* Set these two lines once, or open the page with a link that ends in #d=<database address>&b=<board name> */
+/* Open this page with a link that ends in #d=<database address>&b=<board name> (the counter makes it for you). */
 var DB="",BOARD="",EXP=0;
 (function(){var h=location.hash.replace(/^#/,"").split("&");h.forEach(function(p){var kv=p.split("="),k=kv[0],v=decodeURIComponent(kv[1]||"");if(k==="d")DB=v;if(k==="b")BOARD=v;if(k==="x")EXP=parseInt(v,10)||0;});})();
 DB=String(DB).replace(/\/+$/,"");BOARD=String(BOARD).replace(/[^A-Za-z0-9_-]/g,"");
-var D=null,lastOk=0,reqAt=0,reqLast=0;
+var D=null,reqAt=0,reqLast=0;
 function $(i){return document.getElementById(i);}
 function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function f(n){return Number(n||0).toLocaleString();}
 function tm(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});}
 function ago(ms){var s=Math.max(0,Math.round((Date.now()-ms)/1000));if(s<60)return s+" sec ago";var m=Math.round(s/60);if(m<60)return m+" min ago";return Math.round(m/60)+" hr ago";}
-function draw(){
-  if(!D){return;}
-  var done=D.done|0,tg=D.target>0?D.target:null,togo=tg!=null?Math.max(0,tg-done):null,pct=tg?Math.min(100,done/tg*100):0;
-  $("ttl").textContent=D.vessel||"Car count";
-  $("sub").textContent=[D.yard,D.foreman?"Foreman "+D.foreman:"",D.started?"Started "+tm(D.started):""].filter(Boolean).join(" · ");
-  var st=$("st");
-  if(tg&&done>=tg){st.textContent="Complete";st.className="chip done";}
-  else if(D.paused){st.textContent="Paused since "+tm(D.paused);st.className="chip pz";}
-  else if(D.started){st.textContent="Receiving";st.className="chip go";}
-  else{st.textContent="Not started";st.className="chip";}
-  var h='<div class="card"><div class="big"><div><div class="num">'+f(done)+'</div><div class="lab">cars discharged</div></div>'+
-    (tg!=null?'<div><div class="num">'+f(togo)+'</div><div class="lab">to go of '+f(tg)+' expected</div></div>':'')+'</div>'+
-    (tg?'<div class="bar"><i style="width:'+pct.toFixed(1)+'%"></i></div><div class="lab">'+Math.round(pct)+'% done</div>':'')+'</div>';
-  h+='<div class="tiles"><div class="t"><b>'+(D.spots?f(D.spots):"\u2013")+'</b><span>spots</span></div>'+
-     '<div class="t"><b>'+esc(D.togo||(togo!=null?f(togo):"\u2013"))+'</b><span>to go</span></div><div class="t"><b>'+esc(D.mpd||"\u2013")+'</b><span>moves/driver</span></div>'+
-     '<div class="t"><b>'+esc(D.last||"\u2013")+'</b><span>cars/last hr</span></div><div class="t"><b>'+esc(D.eta||"\u2013")+'</b><span>est. finish</span></div><div class="t"><b>'+(D.started?tm(D.started):"\u2013")+'</b><span>shift started</span></div></div>';
-  var L=D.lots||[];
-  if(L.length){h+='<h2>Yard map</h2>';var LI=-1;L.forEach(function(l){LI++;h+='<div class="lot"><h3>'+esc(l.lot)+'</h3>'+(l.m&&l.m.r&&l.m.r.length?'<div class="mapw"><canvas class="map" data-i="'+LI+'"></canvas></div>':'')+'<div class="rows">';
-    (l.rows||[]).forEach(function(r){var full=r.f===1,part=!full&&r.c>0;
-      h+='<div class="r'+(full?" full":part?" part":"")+'"><b>'+esc(r.n)+'</b><span>'+(full?f(r.c)+" cars":part?f(Math.max(0,r.p-r.c))+" to go":f(r.p)+" spots")+'</span></div>';});
-    h+='</div></div>';});}
-  $("body").innerHTML=h;paint();
-  $("upd").textContent="Updated "+tm(D.ts)+" ("+ago(D.ts)+")";
-  var s=$("stale"),age=Date.now()-D.ts;
-  if(age>120000){s.textContent="These numbers are "+ago(D.ts).replace(" ago","")+" old. The counter may be offline. Tap Request update.";s.className="on";}else s.className="";
-  if(reqAt&&D.ts>=reqAt){$("rqm").textContent="Updated "+tm(D.ts)+".";reqAt=0;}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function num(x){var m=String(x==null?"":x).replace(/,/g,"").match(/[\d.]+/);return m?parseFloat(m[0]):null;}
+
+/* ---- pace chart: cars parked per 15 minutes, solid = done, dashed = projected to finish ---- */
+function paceSvg(){
+  var Q=900000,now=Date.now(),st=D.started,H=(D.h||[]).map(function(e){return[e[0]*1000,e[1]];}).filter(function(e){return st&&e[0]>=st-60000;});
+  if(!st||H.length<1)return'<div class="msg" style="padding:14px 0">The pace chart appears once the shift has started and cars are counted.</div>';
+  function at(t){var v=null;for(var i=0;i<H.length;i++){if(H[i][0]<=t)v=H[i][1];else break;}return v===null?H[0][1]:v;}
+  var t0=Math.floor(st/Q)*Q,bars=[],t;for(t=t0;t<now;t+=Q){var a=at(Math.max(t,st)),b=at(Math.min(t+Q,now));bars.push(Math.max(0,b-a));}
+  var done=D.done|0,togo=D.target>0?Math.max(0,D.target-done):num(D.togo)||0,full=bars.slice(0,-1).slice(-4),rate;
+  if(full.length)rate=full.reduce(function(x,y){return x+y;},0)/full.length;else rate=(num(D.last)||0)/4;
+  var proj=[];if(!D.paused&&togo>0&&rate>0){var rem=togo;while(rem>0&&proj.length<8){proj.push(Math.min(rate,rem));rem-=rate;}}
+  var all=bars.concat(proj),mx=Math.max.apply(null,all.concat([10])),top=Math.ceil(mx/20)*20,Wd=640,Ht=220,L=40,R=8,T=10,B=26,pw=Wd-L-R,ph=Ht-T-B,n=all.length,bw=pw/n,s='<svg viewBox="0 0 '+Wd+' '+Ht+'">',i,y;
+  for(i=0;i<=4;i++){y=T+ph-ph*i/4;s+='<line x1="'+L+'" x2="'+(Wd-R)+'" y1="'+y+'" y2="'+y+'" stroke="'+css("--line")+'"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="'+css("--mut")+'">'+Math.round(top*i/4)+'</text>';}
+  all.forEach(function(v,k){var h=ph*v/top,x=L+k*bw+bw*0.15,w=bw*0.7;
+    if(k<bars.length)s+='<rect x="'+x+'" y="'+(T+ph-h)+'" width="'+w+'" height="'+Math.max(1,h)+'" rx="2" fill="'+css("--acc")+'"/>';
+    else s+='<rect x="'+x+'" y="'+(T+ph-Math.max(h,6))+'" width="'+w+'" height="'+Math.max(h,6)+'" rx="2" fill="none" stroke="'+css("--mut")+'" stroke-dasharray="3 3"/>';});
+  var lx=L+bars.length*bw;s+='<line x1="'+lx+'" x2="'+lx+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="'+css("--mut")+'" stroke-dasharray="2 3"/>';
+  s+='<text x="'+L+'" y="'+(Ht-6)+'" font-size="11" fill="'+css("--mut")+'">'+tm(t0)+'</text><text x="'+(Wd-R)+'" y="'+(Ht-6)+'" text-anchor="end" font-size="11" fill="'+css("--mut")+'">'+tm(t0+n*Q)+'</text></svg>';
+  return s+'<div class="leg"><span><i style="background:var(--acc)"></i>Parked</span><span><i style="border:1px dashed var(--mut)"></i>Projected to finish</span></div>';
 }
 
-function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
-function paint(){
-  var dk=window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches;
-  var E0=dk?"#2b3642":"#dde3ea",E1=dk?"#232d38":"#eceff3",CAR=cv("--acc")||"#2f7d32",BLK=dk?"#59636e":"#9aa3ad",INK=cv("--ink"),BG=cv("--card");
+/* ---- yard map: each lot in its real shape ---- */
+function paintMaps(){
+  var dk=window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches,E0=css("--e0"),E1=css("--e1"),CAR=css("--acc"),BLK=css("--blk"),INK=css("--ink"),BG=css("--card");
   var cs=document.querySelectorAll("canvas.map");
   for(var n=0;n<cs.length;n++){var c=cs[n],l=(D.lots||[])[+c.getAttribute("data-i")];if(!l||!l.m)continue;
     var r=l.m.r,x0=1e9,y0=1e9,x1=-1,y1=-1,k,bb={};
     for(k=0;k<r.length;k+=6){if(r[k]<x0)x0=r[k];if(r[k+1]<y0)y0=r[k+1];if(r[k]+r[k+2]>x1)x1=r[k]+r[k+2];if(r[k+1]+r[k+3]>y1)y1=r[k+1]+r[k+3];
       var j=r[k+5],q=bb[j]||(bb[j]=[1e9,1e9,-1,-1]);if(r[k]<q[0])q[0]=r[k];if(r[k+1]<q[1])q[1]=r[k+1];if(r[k]+r[k+2]>q[2])q[2]=r[k]+r[k+2];if(r[k+1]+r[k+3]>q[3])q[3]=r[k+1]+r[k+3];}
     var W=Math.max(300,c.parentNode.clientWidth||340),sc=W/(x1-x0),H=Math.min(900,Math.max(80,(y1-y0)*sc)),dp=window.devicePixelRatio||1;
-    sc=W/(x1-x0);if((y1-y0)*sc>H)sc=H/(y1-y0);
+    if((y1-y0)*sc>H)sc=H/(y1-y0);
     c.width=Math.round(W*dp);c.height=Math.round(H*dp);c.style.height=H+"px";
     var g=c.getContext("2d");g.scale(dp,dp);g.clearRect(0,0,W,H);
     for(k=0;k<r.length;k+=6){var st=r[k+4];g.fillStyle=st===1?CAR:st===2?BLK:(r[k+5]%2?E1:E0);
       g.fillRect((r[k]-x0)*sc,(r[k+1]-y0)*sc,Math.max(1,r[k+2]*sc-0.4),Math.max(1,r[k+3]*sc-0.4));}
     g.textAlign="center";g.textBaseline="middle";g.lineJoin="round";
     for(var j2 in bb){var q2=bb[j2],hh=(q2[3]-q2[1])*sc,ww=(q2[2]-q2[0])*sc,fs=Math.min(15,hh*0.8,ww*0.5),nm=l.m.b[j2];if(fs<7||!nm)continue;
-      g.font="700 "+fs+"px system-ui,sans-serif";g.lineWidth=3;g.strokeStyle=BG;g.strokeText(nm,((q2[0]+q2[2])/2-x0)*sc,((q2[1]+q2[3])/2-y0)*sc);g.fillStyle=INK;g.fillText(nm,((q2[0]+q2[2])/2-x0)*sc,((q2[1]+q2[3])/2-y0)*sc);}
+      var cx=((q2[0]+q2[2])/2-x0)*sc,cy=((q2[1]+q2[3])/2-y0)*sc;g.font="700 "+fs+"px system-ui,sans-serif";g.lineWidth=3;g.strokeStyle=BG;g.strokeText(nm,cx,cy);g.fillStyle=INK;g.fillText(nm,cx,cy);}
   }
 }
+
+function draw(){
+  if(!D)return;
+  var done=D.done|0,tg=D.target>0?D.target:null,togo=tg!=null?Math.max(0,tg-done):null,pct=tg?Math.min(100,done/tg*100):0;
+  var cls="chip",lab="Not started";
+  if(tg&&done>=tg){lab="Complete";cls="chip go";}else if(D.paused){lab="Paused since "+tm(D.paused);cls="chip pz";}else if(D.started){lab="Receiving";cls="chip go";}
+  var h='<div class="card"><div class="hd"><div><h1>'+esc(D.vessel||"Car count")+'</h1><div class="sub">'+esc([D.yard,D.foreman?"Foreman "+D.foreman:"",D.started?"Started "+tm(D.started):""].filter(Boolean).join(" · "))+'</div></div><span class="'+cls+'">'+lab+'</span></div>'+
+    '<div class="prog"><span>Cars done'+(tg!=null?' of target':'')+'</span><b>'+f(done)+(tg!=null?' of '+f(tg):'')+'</b></div>'+(tg?'<div class="bar"><i style="width:'+pct.toFixed(1)+'%"></i></div>':'')+
+    '<div class="tiles"><div class="t"><span>Spots</span><b>'+(D.spots?f(D.spots):"–")+'</b></div><div class="t"><span>To go</span><b>'+esc(D.togo||(togo!=null?f(togo):"–"))+'</b></div><div class="t"><span>Moves/driver</span><b>'+esc(D.mpd||"–")+'</b></div>'+
+    '<div class="t"><span>Cars/last hr</span><b>'+esc(D.last||"–")+'</b></div><div class="t"><span>Est. finish</span><b>'+esc(D.eta||"–")+'</b></div><div class="t"><span>Shift started</span><b>'+(D.started?tm(D.started):"–")+'</b></div></div>'+
+    '<div id="stale"></div></div>';
+  h+='<div class="card"><div class="hh"><h2>Pace</h2><small>cars parked per 15 min</small></div>'+paceSvg()+'</div>';
+  var L=D.lots||[],i;
+  L.forEach(function(l,i){var rows=l.rows||[],nf=rows.filter(function(r){return r.f===1;}).length,fl=-1;
+    h+='<div class="card"><div class="hh"><h2>'+(i===0?'Yard map':'')+'</h2><small>'+esc(l.lot)+'</small></div>'+
+      (l.m&&l.m.r&&l.m.r.length?'<div class="mapw"><canvas class="map" data-i="'+i+'"></canvas></div><div class="leg"><span><i style="background:var(--acc)"></i>Car parked</span><span><i style="background:var(--e0)"></i>Open</span><span><i style="background:var(--blk)"></i>Blocked</span></div>':'')+
+      '<div class="hh" style="margin-top:14px"><h2>'+esc(l.lot)+'</h2><small>'+nf+' of '+rows.length+' full</small></div><div class="list">';
+    rows.forEach(function(r){var full=r.f===1,part=!full&&r.c>0,tag=part&&fl<0;if(tag)fl=1;
+      h+='<div class="li'+(full?' full':'')+'"><div class="cb">'+(full?'✓':'')+'</div><b>'+esc(r.n)+'</b>'+(tag?'<span class="tag">filling</span>':'')+'<span>'+(full?f(r.c)+' cars':part?f(Math.max(0,r.p-r.c))+' to go':f(r.p)+' spots')+'</span></div>';});
+    h+='</div></div>';});
+  $("body").innerHTML=h;paintMaps();
+  $("upd").textContent="Updated "+tm(D.ts)+" · View only. Updates by itself.";
+  var s=$("stale"),age=Date.now()-D.ts;
+  if(age>120000){s.textContent="No new count since "+tm(D.ts)+" ("+ago(D.ts)+"). The crew's app may be closed or out of signal. Tap Request update.";s.className="on";}else s.className="";
+  if(reqAt&&D.ts>=reqAt){$("rqm").textContent="Updated "+tm(D.ts)+".";reqAt=0;}
+}
 function poll(){
-  if(EXP&&Date.now()>EXP){$("st").textContent="Expired";$("rq").style.display="none";$("body").innerHTML='<div class="card empty">This link has expired. Ask for a new QR code.</div>';D=null;return;}
-  if(!DB||!BOARD){$("body").innerHTML='<div class="card empty">This page needs its link. Ask for the full boss link.</div>';$("st").textContent="No link";return;}
+  if(EXP&&Date.now()>EXP){$("rq").style.display="none";$("body").innerHTML='<div class="card empty">This link has expired. Ask for a new QR code.</div>';D=null;return;}
+  if(!DB||!BOARD){$("body").innerHTML='<div class="card empty">This page needs its link. Ask for the full boss link.</div>';return;}
   fetch(DB+"/live/"+BOARD+"/data.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
-    lastOk=Date.now();if(d&&typeof d==="object"){D=d;draw();}else{$("st").textContent="Waiting";$("body").innerHTML='<div class="card empty">Nothing has been sent yet. The count will appear here once the shift is set up.</div>';}
-  }).catch(function(){if(!D){$("st").textContent="Offline";$("body").innerHTML='<div class="card empty">Could not reach the count. Trying again…</div>';}else{$("upd").textContent="Connection lost. Last update "+tm(D.ts)+".";}});
+    if(d&&typeof d==="object"){D=d;draw();}else if(!D){$("body").innerHTML='<div class="card empty">Nothing has been sent yet. The count will appear here once the shift is set up.</div>';}
+  }).catch(function(){if(!D){$("body").innerHTML='<div class="card empty">Could not reach the count. Trying again…</div>';}else{$("upd").textContent="Connection lost. Last update "+tm(D.ts)+".";}});
 }
 $("rq").onclick=function(){
   if(!DB||!BOARD)return;var now=Date.now();if(now-reqLast<30000){$("rqm").textContent="Already requested. Please wait a moment.";return;}
   reqLast=now;$("rq").disabled=true;$("rqm").textContent="Asking…";
   fetch(DB+"/req/"+BOARD+".json",{method:"PUT",headers:{"Content-Type":"application/json"},body:String(now)}).then(function(r){if(!r.ok)throw 0;reqAt=now;$("rqm").textContent="Requested. Waiting for the counter…";poll();}).catch(function(){$("rqm").textContent="Could not send the request.";}).then(function(){setTimeout(function(){$("rq").disabled=false;},30000);});
 };
-poll();setInterval(poll,5000);setInterval(function(){if(D)draw();},30000);window.addEventListener('resize',function(){if(D)paint();});
+poll();setInterval(poll,5000);setInterval(function(){if(D)draw();},30000);window.addEventListener("resize",function(){if(D)paintMaps();});
 </script></body></html>
