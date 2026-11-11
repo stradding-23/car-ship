@@ -2299,9 +2299,9 @@ function qrCanvas(text,px){var q=QRX.make(text,"M")||QRX.make(text,"L");if(!q)re
   for(var y=0;y<q.n;y++)for(var x=0;x<q.n;x++)if(q.m[y][x])g.fillRect((x+4)*sc,(y+4)*sc,sc,sc);return c;}
 
 /* ===== Password gate and Supercargo (view-only) dashboard ===== */
-var GK="blair_gate_v1",GH=8212828197698142;
+var GK="blair_gate_v1",GH=1868485549345948;
 function gHash(s){var a=0xdeadbeef,b=0x41c6ce57;for(var i=0,c;i<s.length;i++){c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677);}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return 4294967296*(2097151&b)+(a>>>0);}
-var GUN=false;try{GUN=localStorage.getItem(GK)===String(GH);}catch(e){}
+var GUN=false;try{localStorage.removeItem(GK);}catch(e){}
 var DASH=(function(){
   var DE=document.getElementById("dash"),D=null,tmr=0;
   function $(i){return document.getElementById(i);}
@@ -2406,12 +2406,13 @@ function draw(){
   return{open:open,close:close,sync:sync};})();
 function gShow(){document.getElementById("gate").classList.add("open");DASH.close();document.getElementById("gpw").value="";document.getElementById("ger").textContent="";}
 function gOpen(){document.getElementById("gate").classList.remove("open");}
-document.getElementById("gopen").onclick=function(){var v=document.getElementById("gpw").value.trim();if(gHash("carship:"+v.toUpperCase())===GH){try{localStorage.setItem(GK,String(GH));}catch(e){}GUN=true;gOpen();}else document.getElementById("ger").textContent="Wrong password.";};
+document.getElementById("gopen").onclick=function(){var v=document.getElementById("gpw").value.trim();if(gHash("carship:"+v.toUpperCase())===GH){GUN=true;gOpen();}else document.getElementById("ger").textContent="Wrong password.";};
 document.getElementById("gpw").onkeydown=function(e){if(e.key==="Enter")document.getElementById("gopen").onclick();};
 document.getElementById("gview").onclick=function(){gOpen();DASH.open();};
 document.getElementById("dsback").onclick=function(){DASH.close();if(!GUN)gShow();};
 document.getElementById("dashb").onclick=function(){DASH.open();};
 if(GUN)gOpen();
+try{if(/supercargo/i.test(location.hash+location.search)){gOpen();DASH.open();}}catch(e){}
 </script>
 </body>
 </html>
