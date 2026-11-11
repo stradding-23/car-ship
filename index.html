@@ -281,6 +281,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 #gate button.alt{background:transparent;color:#1f6feb;border:2px solid #1f6feb}
 #gate .er{color:#d33;font-size:14px;min-height:18px;margin-top:6px}
 #gate .or{text-align:center;color:#6b7280;font-size:13px;margin:14px 0 0}
+#dash .rf{width:100%;margin:0 0 10px;background:var(--blue);color:#fff}
 #dash .bk{background:transparent;color:var(--blue);border:2px solid var(--blue);margin:8px 0 0;width:100%}
 </style>
 </head>
@@ -378,7 +379,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
-<div id="dash"><div id="dsin"><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
+<div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
 <div id="gate" class="open"><div class="gc"><h2>Blair / P7 / EB1 Car Ship</h2><p>Enter the password to open the counter.</p><input id="gpw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password" enterkeyhint="go"><div class="er" id="ger"></div><button id="gopen">Open counter</button><div class="or">No password?</div><button class="alt" id="gview">Supercargo view</button></div></div>
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
@@ -438,6 +439,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
   var DB={doc:docRef,collection:function(name){var sg=segs(name);return{
     doc:function(id){return docRef(name+"/"+id);},
     onSnapshot:function(cb,err){return listen(sg,true,cb,err);}};}};
+  window.__fbResync=function(){try{if(es){es.close();es=null;}}catch(e){}ready=false;connect();};
   window.__shim={cache:function(){return cache;},subs:function(){return subs.length;},ready:function(){return ready;}};
   window.claude={use:function(n){return Promise.resolve(n==="db"?DB:null);}};
 })();
@@ -2370,7 +2372,11 @@ function draw(){
   function open(){DE.classList.add("open");refresh();clearInterval(tmr);tmr=setInterval(refresh,5000);}
   function close(){DE.classList.remove("open");clearInterval(tmr);}
   window.addEventListener("resize",function(){if(DE.classList.contains("open")&&D)paintMaps();});
-  return{open:open,close:close};})();
+  function sync(){var m=$("dsmsg"),b=$("dsrefresh");m.textContent="Syncing with the counter\u2026";b.disabled=true;
+    try{if(window.__fbResync)window.__fbResync();}catch(e){}
+    setTimeout(function(){refresh();m.textContent="Synced at "+tm(Date.now())+".";b.disabled=false;},1500);}
+  $("dsrefresh").onclick=sync;
+  return{open:open,close:close,sync:sync};})();
 function gShow(){document.getElementById("gate").classList.add("open");DASH.close();document.getElementById("gpw").value="";document.getElementById("ger").textContent="";}
 function gOpen(){document.getElementById("gate").classList.remove("open");}
 document.getElementById("gopen").onclick=function(){var v=document.getElementById("gpw").value.trim();if(gHash("carship:"+v.toUpperCase())===GH){try{localStorage.setItem(GK,String(GH));}catch(e){}GUN=true;gOpen();}else document.getElementById("ger").textContent="Wrong password.";};
