@@ -211,7 +211,96 @@ button{min-height:40px;touch-action:manipulation}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="fb.js"></script>
+<script>window.EB1_SEED={"layout/main":{"lots":{"Deep":{"a":["39,68","38,70","37,71","37,72","36,73","41,64","41,65","42,63","47,54","46,56","47,55","51,48","51,47","52,46","53,45","53,44","54,43","54,42","57,37","56,39","57,38","58,36","59,34","46,8","47,8","48,8","49,8"],"d":["1,77","2,77","3,77","4,77","21,77","22,77","23,77","24,77","34,78","43,60","43,59","43,58","44,58","44,57","43,57","48,51","48,50","49,50","46,21","47,21","48,21","49,21","73,8","69,15","68,16"]},"Near":{"a":[],"d":["17,99","18,99","19,99","31,50","32,50","20,99","47,99","48,99","49,99","50,99","59,50","60,50","61,50","62,50","30,50","29,50"]},"Near Side":{"a":[],"d":[]},"X":{"a":[],"d":["31,27","32,27","33,27","34,27","6,27","7,27","8,27","9,27"]}},"updated":1791248314594},"shared/settings":{"conds":{"ow":{"k":1.25,"n":"One-way ramp traffic","o":1},"sl":{"k":1.2,"n":"Ship running slow","o":3},"wx":{"k":1.15,"n":"Weather","o":2}}},"shared/vessels":{"lists":[{"date":"2026-10-27","shift":"night","vessels":[{"drivers":7,"name":"YM PLUM","notes":"4 gangs to finish, 180 mpg. 12 lashers.","start":"6 PM","terminal":"WUT","type":"container"},{"drivers":22,"name":"YM TUTORIAL","notes":"4 gangs tonight, 3 tomorrow day, finish Friday dayside.","start":"6 PM","terminal":"P-4","type":"container"},{"drivers":12,"name":"EVER SUMMIT","notes":"","start":"6 PM","terminal":"PCT","type":"container"},{"drivers":0,"name":"LIBERTY PEACE","notes":"Ramp foreman, ship starting dayside.","start":"6 PM","terminal":"P-7","type":"ramp_gang"},{"drivers":10,"name":"MATSON KODIAK","notes":"2 gangs on the hoot, 3 tomorrow day, finish tomorrow night.","start":"3 AM","terminal":"SSAT","type":"container"},{"drivers":0,"name":"BETTY","notes":"","start":"6 PM","terminal":"CG","type":"cg"}]},{"date":"2026-10-28","shift":"day","vessels":[{"drivers":21,"name":"YM TUTORIAL","notes":"4 gangs tonight, 3 tomorrow day, finish Friday dayside.","start":"8 AM","terminal":"P-4","type":"container"},{"drivers":8,"name":"EVER SALUTE","notes":"","start":"8 AM","terminal":"PCT","type":"container"},{"drivers":15,"name":"MATSON KODIAK","notes":"2 gangs on the hoot, 3 tomorrow day, finish tomorrow night.","start":"8 AM","terminal":"SSAT","type":"container"},{"drivers":7,"name":"LIBERTY PEACE","notes":"Disch 500 military pcs. Day and night. 4-6 shifts.","start":"8 AM","terminal":"P-7","type":"military"},{"drivers":39,"name":"LIBERTY PASSION","notes":"2 day job. Disch 1179 autos tomorrow, 39 drivers. Thurs disch 766 autos.","start":"8 AM","terminal":"BLAIR","type":"car_ship"},{"drivers":0,"name":"BETTY","notes":"","start":"6 AM","terminal":"CG","type":"cg"}]}],"source":"dispatchcompanion.com","updated":1793149758365}};</script>
+<script>
+/* EB1 counter: Firebase Realtime Database connection.
+   Gives the app the same small database interface it used inside Claude
+   (doc/collection, set/update/delete, onSnapshot), so the counting code is unchanged.
+   Anyone can read. Writing needs this device to have entered the crew passcode once. */
+(function(){
+var CFG={
+  apiKey:"AIzaSyCciVfc6tJHSwb805LED-ASmnkWRyF2u3Y",
+  authDomain:"car-ship-88342.firebaseapp.com",
+  databaseURL:"https://car-ship-88342-default-rtdb.firebaseio.com",
+  projectId:"car-ship-88342",
+  storageBucket:"car-ship-88342.firebasestorage.app",
+  messagingSenderId:"666607232120",
+  appId:"1:666607232120:web:612a4b70439a7a9002798d"
+};
+var ROOT="eb1",EDK="eb1_editor_v1";
+var FBX=window.FBX={ok:false,editor:false,uid:null,online:false,err:null};
+if(!window.firebase){FBX.err="Firebase didn't load";window.claude={use:function(){return Promise.resolve(null);}};return;}
+
+/* Realtime Database can't hold arrays reliably or keys with . # $ [ ] /, so encode them */
+var AM="\u0001A";
+function ek(k){return String(k).replace(/[%.#$\[\]\/]/g,function(c){return "%"+("0"+c.charCodeAt(0).toString(16).toUpperCase()).slice(-2);});}
+function dk(k){return k.indexOf("%")<0?k:decodeURIComponent(k);}
+function isObj(v){return v!==null&&typeof v==="object"&&!Array.isArray(v);}
+function enc(v){if(Array.isArray(v))return AM+JSON.stringify(v);
+  if(isObj(v)){var o={},n=0;for(var k in v){if(v[k]===undefined||v[k]===null)continue;var e=enc(v[k]);if(isObj(e)&&!Object.keys(e).length)continue;o[ek(k)]=e;n++;}return o;}
+  return v===undefined?null:v;}
+function dec(v){if(typeof v==="string"&&v.indexOf(AM)===0){try{return JSON.parse(v.slice(AM.length));}catch(e){return [];}}
+  if(isObj(v)){var o={};for(var k in v)o[dk(k)]=dec(v[k]);return o;}return v;}
+/* nested patch -> flat multi-path update; null removes */
+function flat(pre,o,out){for(var k in o){var v=o[k],p=pre+"/"+ek(k);
+  if(isObj(v)){if(Object.keys(v).length)flat(p,v,out);}else out[p]=(v===null||v===undefined)?null:enc(v);}return out;}
+function pth(p){return ROOT+"/"+String(p).split("/").map(ek).join("/");}
+function errMap(e){var m=String(e&&(e.code||e.message)||"").toLowerCase();
+  if(m.indexOf("permission")>=0){if(FBX.editor)FBX.lock();return {code:"invalid_argument",message:"Not allowed: enter the crew passcode"};}
+  return {code:"unavailable",message:String(e&&e.message||e)};}
+function wrapP(p){return Promise.resolve(p).catch(function(e){throw errMap(e);});}
+
+firebase.initializeApp(CFG);
+var rdb=firebase.database(),auth=firebase.auth();
+FBX.rdb=rdb;FBX.enc=enc;FBX.dec=dec;FBX.root=ROOT;
+
+function snapDoc(s,id){var v=s.val();return {id:id,exists:v!==null&&v!==undefined,data:function(){return dec(v)||{};},metadata:{hasPendingWrites:false,fromCache:false}};}
+function docRef(path){var r=rdb.ref(pth(path)),id=String(path).split("/").pop();
+  return {id:id,path:path,
+    set:function(o){return wrapP(r.set(enc(o)));},
+    update:function(o){var f=flat("",o,{}),g={};for(var k in f)g[k.slice(1)]=f[k];if(!Object.keys(g).length)return Promise.resolve();return wrapP(r.update(g));},
+    delete:function(){return wrapP(r.remove());},
+    get:function(){return wrapP(r.once("value")).then(function(s){return snapDoc(s,id);});},
+    onSnapshot:function(cb,err){var f=function(s){try{cb(snapDoc(s,id));}catch(e){console.error(e);}};
+      r.on("value",f,function(e){if(err)err(errMap(e));});return function(){r.off("value",f);};}};}
+function colRef(path){var r=rdb.ref(pth(path));
+  return {onSnapshot:function(cb,err){var f=function(s){var docs=[];
+      s.forEach(function(c){var v=c.val();docs.push({id:dk(c.key),exists:true,data:function(){return dec(v)||{};}});});
+      try{cb({docs:docs,size:docs.length,empty:!docs.length,metadata:{hasPendingWrites:false,fromCache:false}});}catch(e){console.error(e);}};
+      r.on("value",f,function(e){if(err)err(errMap(e));});return function(){r.off("value",f);};}};}
+var DB={doc:docRef,collection:colRef};
+FBX.db=DB;
+
+var readyRes,ready=new Promise(function(r){readyRes=r;});
+FBX.ready=ready;
+window.claude={use:function(n){return n==="db"?ready:Promise.resolve(null);}};
+
+function edCheck(){var v=null;try{v=localStorage.getItem(EDK);}catch(e){}FBX.editor=!!(FBX.uid&&v===FBX.uid);}
+FBX.lock=function(){FBX.editor=false;try{localStorage.removeItem(EDK);}catch(e){}if(FBX.onlock)try{FBX.onlock();}catch(e){}};
+FBX.unlock=function(code){code=String(code||"").trim().toLowerCase();
+  if(!FBX.uid)return Promise.reject(new Error("Not connected yet. Check the signal and try again."));
+  return Promise.resolve(rdb.ref("editors/"+FBX.uid).set(code)).then(function(){
+    try{localStorage.setItem(EDK,FBX.uid);}catch(e){}FBX.editor=true;},
+    function(e){var m=String(e&&(e.code||e.message)||"").toLowerCase();
+      throw new Error(m.indexOf("permission")>=0?"That passcode isn't right.":"Couldn't reach the server. Check the signal and try again.");});};
+
+var started=false,tries=0;
+function signIn(){auth.signInAnonymously().catch(function(e){FBX.err=String(e&&e.message||e);tries++;setTimeout(signIn,Math.min(30000,2000*tries));});}
+auth.onAuthStateChanged(function(u){
+  if(!u){signIn();return;}
+  FBX.uid=u.uid;edCheck();FBX.ok=true;
+  if(!started){started=true;(FBX.editor?FBX.seed():Promise.resolve()).then(function(){readyRes(DB);},function(){readyRes(DB);});}});
+/* first device to unlock a fresh database copies in the saved layout edits, pace adjustments and vessel list */
+FBX.seed=function(){if(!FBX.editor)return Promise.resolve();
+  var m=rdb.ref(ROOT+"/meta/seeded");
+  return Promise.resolve(m.once("value")).then(function(s){if(s.val())return;
+    return Promise.resolve(window.EB1_SEED||{}).then(function(d){
+      var u={};for(var p in d)u[pth(p)]=enc(d[p]);u[ROOT+"/meta/seeded"]=Date.now();return rdb.ref().update(u);});
+  }).catch(function(e){console.warn("seed",e);});};
+rdb.ref(".info/connected").on("value",function(s){FBX.online=s.val()===true;if(FBX.onconn)try{FBX.onconn(FBX.online);}catch(e){}});
+})();
+
+</script>
 </head>
 <body>
 <div class="top">
@@ -1619,7 +1708,85 @@ setMode();draw();counts();renderRows();
   if(!seen)h.classList.add("open");
   document.getElementById("hintx").onclick=function(){h.classList.remove("open");try{localStorage.setItem(k,"1");}catch(e){}};})();
 </script>
-<script src="app-extra.js"></script>
+<script>
+/* EB1 counter extras for the GitHub/Firebase version:
+   crew passcode, boss link, and the live summary the boss page reads. */
+function unlockDlg(first){
+  if(!window.FBX||!FBX.rdb){shToast("Live sharing isn't loaded. Check the signal and reload.");return;}
+  var sh=ov("<h3>Crew passcode</h3><p class='sm'>Enter the crew passcode to count cars on this device. You only need to do this once per device.</p>"+
+    "<input id='pcin' type='password' autocomplete='off' autocapitalize='none' autocorrect='off' spellcheck='false' aria-label='Crew passcode'>"+
+    "<div class='err' id='pcerr' role='alert'></div><div class='btns'><button id='pcno'>"+(first?"View only":"Cancel")+"</button><button id='pcgo' class='pri'>Unlock</button></div>"+
+    "<p class='nt'>Without the passcode you can still watch the live count, but taps on this device aren't saved.</p>");
+  var inp=sh.querySelector("#pcin"),er=sh.querySelector("#pcerr"),busy=false;
+  sh.querySelector("#pcno").onclick=ovClose;
+  inp.oninput=function(){er.textContent="";};
+  function go(){if(busy)return;if(!inp.value.trim()){er.textContent="Enter the passcode first.";return;}
+    busy=true;er.textContent="Checking…";
+    FBX.unlock(inp.value).then(function(){return FBX.seed();}).then(function(){busy=false;ovClose();
+      SH.ro=false;SH.roShown=false;
+      for(var k in SH.units){var u=SH.units[k];u.fly=null;u.mode="upd";u.applyRem();u.pend=u.exists||!u.ready?{}:shStrip(u.get());u.since=shEmpty(u.pend)?0:Date.now();u.kick();}
+      shSavePend();shStatus();sumKick();
+      shToast("Unlocked. Cars counted on this device are now shared live.");},
+      function(e){busy=false;er.textContent=(e&&e.message)||"That didn't work. Try again.";});}
+  sh.querySelector("#pcgo").onclick=go;
+  inp.onkeydown=function(e){if(e.key==="Enter")go();};
+  setTimeout(function(){inp.focus();},60);}
+
+if(window.FBX){
+  FBX.onlock=function(){if(SH&&!SH.ro){SH.ro=true;SH.roShown=false;shReadOnly();shStatus();}};
+  FBX.onconn=function(){shStatus();};
+  if(FBX.ready)FBX.ready.then(function(db){if(db&&!FBX.editor)setTimeout(function(){if(!SH.roShown&&!document.getElementById("ov").classList.contains("open")){SH.roShown=true;unlockDlg(true);}},500);});
+}
+
+function bossURL(){return location.href.replace(/[#?].*$/,"").replace(/[^\/]*$/,"")+"boss.html";}
+document.getElementById("bosslink").onclick=function(){
+  var u=bossURL(),sh=ov("<h3>Boss link</h3><p class='sm'>Send this link to anyone who should watch the count. It's view only and needs no passcode.</p>"+
+    "<input id='blu' type='text' readonly aria-label='Boss link'><div class='err' id='blmsg' role='status' style='color:var(--mut)'></div>"+
+    "<div class='btns' style='flex-wrap:wrap'><button id='blopen'>Open it</button><button id='blcopy'>Copy</button>"+(navigator.share?"<button id='blshare' class='pri'>Send…</button>":"")+"<button id='bldone'"+(navigator.share?"":" class='pri'")+">Done</button></div>");
+  var inp=sh.querySelector("#blu"),msg=sh.querySelector("#blmsg");inp.value=u;
+  sh.querySelector("#bldone").onclick=ovClose;
+  sh.querySelector("#blopen").onclick=function(){window.open(u,"_blank");};
+  sh.querySelector("#blcopy").onclick=function(){var ok=function(){msg.textContent="Copied. Paste it into a text or email.";},sel=function(){inp.focus();inp.select();inp.setSelectionRange(0,u.length);
+      var d=false;try{d=document.execCommand("copy");}catch(e){}msg.textContent=d?"Copied. Paste it into a text or email.":"Press and hold the link above to copy it.";};
+    try{navigator.clipboard.writeText(u).then(ok,sel);}catch(e){sel();}};
+  var sb=sh.querySelector("#blshare");if(sb)sb.onclick=function(){navigator.share({title:"EB1 live count",text:"EB1 live car count (updates by itself):",url:u}).catch(function(){});};};
+
+/* ===== Live summary for the boss page (eb1/summary) ===== */
+var SUM={last:"",at:0,t:0};
+function sumTxt(id){var e=document.getElementById(id);return e?Array.prototype.map.call(e.childNodes,function(n){return n.textContent;}).join(" ").replace(/\s+/g," ").trim():"";}
+function sumGeo(i){var L=LOTS[i],x=xs[i],y=[0];for(var r=0;r<NR[i];r++)y.push(y[r]+(L.rh[r]||20));
+  var bb=bands[i].map(function(){return null;});
+  SP[i].forEach(function(s,k){var j=bandOf[i][k],b=bb[j];
+    if(!b)bb[j]=[s[0],s[0],s[1],s[1]];else{if(s[0]<b[0])b[0]=s[0];if(s[0]>b[1])b[1]=s[0];if(s[1]<b[2])b[2]=s[1];if(s[1]>b[3])b[3]=s[1];}});
+  return bb.map(function(b){return b?[x[b[2]],y[b[0]],x[b[3]+1]-x[b[2]],y[b[1]+1]-y[b[0]]]:null;});}
+function sumBins(){var st=P.start,now=Date.now(),B=900000;if(!st||st>now)return null;st=Math.max(st,now-16*3600000);
+  var n=Math.floor((now-st)/B)+1,a=[];for(var q=0;q<n;q++)a.push(0);
+  for(var l in MT){var m=MT[l]||{};for(var k in m){var t=m[k]*1000;if(t>=st&&t<=now){q=Math.floor((t-st)/B);if(q<n)a[q]++;}}}
+  return{s:st,b:a};}
+function sumRecv(){var best=0,bl=null;
+  LOTS.forEach(function(L,i){var m=(MT&&MT[L.name])||{};for(var k in m){if(m[k]>best){var p=k.split(","),g=grid[i]?grid[i][(+p[0])*NC[i]+(+p[1])]:-1;
+    if(g>=0&&sel[i][g]===1){best=m[k];bl={y:LN(L.name),b:bands[i][bandOf[i][g]].name};}}}});
+  if(!bl||Date.now()-best*1000>20*60000)return null;return bl;}
+function sumConds(){var o=[],now=Date.now();(P.conds||[]).forEach(function(q){if(q.s<=now&&(q.e==null||now<q.e)&&adjPct(q.c)==null&&CF&&CF[q.c]){var n=condName(q.c);if(o.indexOf(n)<0)o.push(n);}});return o;}
+function sumBuild(){var Y=[];
+  LOTS.forEach(function(L,i){if(!bands[i])return;var st=blkState(i),vis=st.map(function(b,j){return !isHid(i,j);});
+    if(!vis.some(function(v){return v;}))return;var g=sumGeo(i),ft=(FT&&FT[L.name])||{};
+    Y.push({n:LN(L.name),b:st.map(function(b,j){return{n:b.name,u:vis[j]?1:0,c:b.cars,p:b.cap,o:b.open,f:b.full?1:0,t:ft[b.name]||0,g:g[j]};}).filter(function(b){return b.g;})});});
+  var a=adjLevel(Date.now());
+  return{v:1,vessel:P.vessel||"",foreman:P.foreman||"",done:TOT,spots:CAPT,target:P.target!=null?P.target:null,
+    togo:sumTxt("togo"),togol:sumTxt("togol"),eta:sumTxt("eta"),etal:sumTxt("etal"),rate:sumTxt("rtv"),ratel:sumTxt("rtl"),
+    mh:movesHr(),drivers:P.drivers||0,paused:pzActive()?pzSince():0,adj:a?adjTxt(a):"",conds:sumConds(),
+    start:P.start||0,pauses:(P.pauses||[]).map(function(p){return[p.s,p.e||0];}),bins:sumBins(),recv:sumRecv(),yards:Y};}
+function sumPush(){if(!window.FBX||!FBX.rdb||!FBX.editor||!SH||!SH.db||SH.ro||!SH.mReady||!FBX.online)return;
+  var s;try{s=sumBuild();}catch(e){console.warn("summary",e);return;}
+  var j=JSON.stringify(s),now=Date.now();if(j===SUM.last&&now-SUM.at<60000)return;
+  s.updated=now;SUM.last=j;SUM.at=now;
+  FBX.rdb.ref(FBX.root+"/summary").set(FBX.enc(s)).catch(function(){SUM.last="";});}
+function sumKick(){clearTimeout(SUM.t);SUM.t=setTimeout(sumPush,1200);}
+setInterval(sumPush,5000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)sumKick();});
+
+</script>
 
 </body>
 </html>
