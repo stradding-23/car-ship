@@ -83,7 +83,95 @@ svg text{font-family:inherit}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="fb.js"></script>
+<script>
+/* EB1 counter: Firebase Realtime Database connection.
+   Gives the app the same small database interface it used inside Claude
+   (doc/collection, set/update/delete, onSnapshot), so the counting code is unchanged.
+   Anyone can read. Writing needs this device to have entered the crew passcode once. */
+(function(){
+var CFG={
+  apiKey:"AIzaSyCciVfc6tJHSwb805LED-ASmnkWRyF2u3Y",
+  authDomain:"car-ship-88342.firebaseapp.com",
+  databaseURL:"https://car-ship-88342-default-rtdb.firebaseio.com",
+  projectId:"car-ship-88342",
+  storageBucket:"car-ship-88342.firebasestorage.app",
+  messagingSenderId:"666607232120",
+  appId:"1:666607232120:web:612a4b70439a7a9002798d"
+};
+var ROOT="eb1",EDK="eb1_editor_v1";
+var FBX=window.FBX={ok:false,editor:false,uid:null,online:false,err:null};
+if(!window.firebase){FBX.err="Firebase didn't load";window.claude={use:function(){return Promise.resolve(null);}};return;}
+
+/* Realtime Database can't hold arrays reliably or keys with . # $ [ ] /, so encode them */
+var AM="\u0001A";
+function ek(k){return String(k).replace(/[%.#$\[\]\/]/g,function(c){return "%"+("0"+c.charCodeAt(0).toString(16).toUpperCase()).slice(-2);});}
+function dk(k){return k.indexOf("%")<0?k:decodeURIComponent(k);}
+function isObj(v){return v!==null&&typeof v==="object"&&!Array.isArray(v);}
+function enc(v){if(Array.isArray(v))return AM+JSON.stringify(v);
+  if(isObj(v)){var o={},n=0;for(var k in v){if(v[k]===undefined||v[k]===null)continue;var e=enc(v[k]);if(isObj(e)&&!Object.keys(e).length)continue;o[ek(k)]=e;n++;}return o;}
+  return v===undefined?null:v;}
+function dec(v){if(typeof v==="string"&&v.indexOf(AM)===0){try{return JSON.parse(v.slice(AM.length));}catch(e){return [];}}
+  if(isObj(v)){var o={};for(var k in v)o[dk(k)]=dec(v[k]);return o;}return v;}
+/* nested patch -> flat multi-path update; null removes */
+function flat(pre,o,out){for(var k in o){var v=o[k],p=pre+"/"+ek(k);
+  if(isObj(v)){if(Object.keys(v).length)flat(p,v,out);}else out[p]=(v===null||v===undefined)?null:enc(v);}return out;}
+function pth(p){return ROOT+"/"+String(p).split("/").map(ek).join("/");}
+function errMap(e){var m=String(e&&(e.code||e.message)||"").toLowerCase();
+  if(m.indexOf("permission")>=0){if(FBX.editor)FBX.lock();return {code:"invalid_argument",message:"Not allowed: enter the crew passcode"};}
+  return {code:"unavailable",message:String(e&&e.message||e)};}
+function wrapP(p){return Promise.resolve(p).catch(function(e){throw errMap(e);});}
+
+firebase.initializeApp(CFG);
+var rdb=firebase.database(),auth=firebase.auth();
+FBX.rdb=rdb;FBX.enc=enc;FBX.dec=dec;FBX.root=ROOT;
+
+function snapDoc(s,id){var v=s.val();return {id:id,exists:v!==null&&v!==undefined,data:function(){return dec(v)||{};},metadata:{hasPendingWrites:false,fromCache:false}};}
+function docRef(path){var r=rdb.ref(pth(path)),id=String(path).split("/").pop();
+  return {id:id,path:path,
+    set:function(o){return wrapP(r.set(enc(o)));},
+    update:function(o){var f=flat("",o,{}),g={};for(var k in f)g[k.slice(1)]=f[k];if(!Object.keys(g).length)return Promise.resolve();return wrapP(r.update(g));},
+    delete:function(){return wrapP(r.remove());},
+    get:function(){return wrapP(r.once("value")).then(function(s){return snapDoc(s,id);});},
+    onSnapshot:function(cb,err){var f=function(s){try{cb(snapDoc(s,id));}catch(e){console.error(e);}};
+      r.on("value",f,function(e){if(err)err(errMap(e));});return function(){r.off("value",f);};}};}
+function colRef(path){var r=rdb.ref(pth(path));
+  return {onSnapshot:function(cb,err){var f=function(s){var docs=[];
+      s.forEach(function(c){var v=c.val();docs.push({id:dk(c.key),exists:true,data:function(){return dec(v)||{};}});});
+      try{cb({docs:docs,size:docs.length,empty:!docs.length,metadata:{hasPendingWrites:false,fromCache:false}});}catch(e){console.error(e);}};
+      r.on("value",f,function(e){if(err)err(errMap(e));});return function(){r.off("value",f);};}};}
+var DB={doc:docRef,collection:colRef};
+FBX.db=DB;
+
+var readyRes,ready=new Promise(function(r){readyRes=r;});
+FBX.ready=ready;
+window.claude={use:function(n){return n==="db"?ready:Promise.resolve(null);}};
+
+function edCheck(){var v=null;try{v=localStorage.getItem(EDK);}catch(e){}FBX.editor=!!(FBX.uid&&v===FBX.uid);}
+FBX.lock=function(){FBX.editor=false;try{localStorage.removeItem(EDK);}catch(e){}if(FBX.onlock)try{FBX.onlock();}catch(e){}};
+FBX.unlock=function(code){code=String(code||"").trim().toLowerCase();
+  if(!FBX.uid)return Promise.reject(new Error("Not connected yet. Check the signal and try again."));
+  return Promise.resolve(rdb.ref("editors/"+FBX.uid).set(code)).then(function(){
+    try{localStorage.setItem(EDK,FBX.uid);}catch(e){}FBX.editor=true;},
+    function(e){var m=String(e&&(e.code||e.message)||"").toLowerCase();
+      throw new Error(m.indexOf("permission")>=0?"That passcode isn't right.":"Couldn't reach the server. Check the signal and try again.");});};
+
+var started=false,tries=0;
+function signIn(){auth.signInAnonymously().catch(function(e){FBX.err=String(e&&e.message||e);tries++;setTimeout(signIn,Math.min(30000,2000*tries));});}
+auth.onAuthStateChanged(function(u){
+  if(!u){signIn();return;}
+  FBX.uid=u.uid;edCheck();FBX.ok=true;
+  if(!started){started=true;(FBX.editor?FBX.seed():Promise.resolve()).then(function(){readyRes(DB);},function(){readyRes(DB);});}});
+/* first device to unlock a fresh database copies in the saved layout edits, pace adjustments and vessel list */
+FBX.seed=function(){if(!FBX.editor)return Promise.resolve();
+  var m=rdb.ref(ROOT+"/meta/seeded");
+  return Promise.resolve(m.once("value")).then(function(s){if(s.val())return;
+    return Promise.resolve(window.EB1_SEED||{}).then(function(d){
+      var u={};for(var p in d)u[pth(p)]=enc(d[p]);u[ROOT+"/meta/seeded"]=Date.now();return rdb.ref().update(u);});
+  }).catch(function(e){console.warn("seed",e);});};
+rdb.ref(".info/connected").on("value",function(s){FBX.online=s.val()===true;if(FBX.onconn)try{FBX.onconn(FBX.online);}catch(e){}});
+})();
+
+</script>
 <script>
 (function(){
 var $=function(id){return document.getElementById(id);};
