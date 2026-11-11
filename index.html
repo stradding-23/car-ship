@@ -281,6 +281,17 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 #gate button.alt{background:transparent;color:#1f6feb;border:2px solid #1f6feb}
 #gate .er{color:#d33;font-size:14px;min-height:18px;margin-top:6px}
 #gate .or{text-align:center;color:#6b7280;font-size:13px;margin:14px 0 0}
+#dash summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:30px}
+#dash summary::-webkit-details-marker{display:none}
+#dash summary small{color:var(--mut);font-weight:400;font-size:13px}
+#dash summary:after{content:"\25BE";margin-left:10px;color:var(--mut)}
+#dash details[open] summary:after{content:"\25B4"}
+#dash summary span{flex:1}
+#dash select{font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);min-height:42px;margin-bottom:8px}
+#dash table.lg{width:100%;border-collapse:collapse;font-size:15px}
+#dash table.lg th{text-align:left;font-size:12px;color:var(--mut);font-weight:400;padding:4px 6px}
+#dash table.lg td{padding:8px 6px;border-top:1px solid var(--line)}
+#dash table.lg tr.wk td{border-top:0;padding-top:0;font-size:12.5px;color:var(--mut)}
 #dash .rf{width:100%;margin:0 0 10px;background:var(--blue);color:#fff}
 #dash .bk{background:transparent;color:var(--blue);border:2px solid var(--blue);margin:8px 0 0;width:100%}
 </style>
@@ -2341,6 +2352,21 @@ function paintMaps(){
   }
 }
 
+var logOpen=false,logDay="";
+function logCard(){
+  var logs=(typeof TL!=="undefined"&&TL.logs)||{},today=dkey(new Date()),ds=Object.keys(logs);if(ds.indexOf(today)<0)ds.push(today);ds.sort().reverse();
+  if(!logDay||ds.indexOf(logDay)<0)logDay=today;
+  var rec=logs[logDay]||{},keys=Object.keys(rec),now=Date.now(),isToday=logDay===today;
+  if(isToday)((TL&&TL.times)||[]).forEach(function(hm){if(keys.indexOf(hm)<0)keys.push(hm);});keys.sort();
+  var n=Object.keys(rec).length,t='<table class="lg"><tr><th>Time</th><th>Cars</th><th>Change</th></tr>',prev=null;
+  if(!keys.length)t+='<tr><td colspan="3" class="msg">Nothing logged '+(isToday?'yet today.':'that day.')+'</td></tr>';
+  keys.forEach(function(hm){var e=rec[hm];
+    if(e){var d=prev?e.n-prev.n:null,wk=prev?workDiff(prev.w,e.w):"";
+      t+='<tr><td><b>'+esc(fmtHM(hm))+'</b></td><td><b>'+f(e.n)+'</b></td><td>'+(d===null?'first':(d>=0?'+':'')+d)+'</td></tr>'+(wk?'<tr class="wk"><td></td><td colspan="2">Worked: '+wk+'</td></tr>':'');prev=e;}
+    else{var at=atHM(new Date(),hm).getTime();t+='<tr><td><b>'+esc(fmtHM(hm))+'</b></td><td colspan="2" class="msg">'+(at>now+60000?'upcoming':at>now-30*60000?'due now':'missed')+'</td></tr>';}});
+  t+='</table>';
+  var opt=ds.map(function(k){var p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]);return '<option value="'+k+'"'+(k===logDay?' selected':'')+'>'+(k===today?'Today, ':'')+dt.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})+'</option>';}).join("");
+  return '<div class="card"><details id="dslogd"'+(logOpen?' open':'')+'><summary><span>Log</span><small>'+n+' logged'+(isToday?' today':'')+'</small></summary><div style="margin-top:10px"><select id="dslogsel">'+opt+'</select>'+t+'</div></details></div>';}
 function draw(){
   if(!D)return;
   var done=D.done|0,tg=D.target>0?D.target:null,togo=tg!=null?Math.max(0,tg-done):null,pct=tg?Math.min(100,done/tg*100):0;
@@ -2352,6 +2378,7 @@ function draw(){
     '<div class="t"><span>Cars/last hr</span><b>'+esc(D.last||"–")+'</b></div><div class="t"><span>Est. finish</span><b>'+esc(D.eta||"–")+'</b></div><div class="t"><span>Shift started</span><b>'+(D.started?tm(D.started):"–")+'</b></div></div>'+
     '<div id="dsstale"></div></div>';
   h+='<div class="card"><div class="hh"><h2>Pace</h2><small>cars parked per 15 min</small></div>'+paceSvg()+'</div>';
+  h+=logCard();
   var L=D.lots||[],i;
   L.forEach(function(l,i){var rows=l.rows||[],nf=rows.filter(function(r){return r.f===1;}).length,fl=-1;
     h+='<div class="card"><div class="hh"><h2>'+(i===0?'Yard map':'')+'</h2><small>'+esc(l.lot)+'</small></div>'+
@@ -2360,7 +2387,7 @@ function draw(){
     rows.forEach(function(r){var full=r.f===1,part=!full&&r.c>0,tag=part&&fl<0;if(tag)fl=1;
       h+='<div class="li'+(full?' full':'')+'"><div class="cb">'+(full?'✓':'')+'</div><b>'+esc(r.n)+'</b>'+(tag?'<span class="tag">filling</span>':'')+'<span>'+(full?f(r.c)+' cars':part?f(Math.max(0,r.p-r.c))+' to go':f(r.p)+' spots')+'</span></div>';});
     h+='</div></div>';});
-  $("dsbody").innerHTML=h;paintMaps();
+  $("dsbody").innerHTML=h;paintMaps();var ld=$("dslogd");if(ld)ld.addEventListener("toggle",function(){logOpen=ld.open;});var lsel=$("dslogsel");if(lsel)lsel.onchange=function(){logDay=lsel.value;logOpen=true;draw();};
   $("dsupd").textContent="Updated "+tm(D.ts)+" · View only. Updates by itself.";
   var s=$("dsstale"),age=Date.now()-D.ts;
   if(age>120000){s.textContent="No new count since "+tm(D.ts)+" ("+ago(D.ts)+"). The crew's app may be closed or out of signal. Tap Request update.";s.className="on";}else s.className="";
