@@ -1018,13 +1018,14 @@ function paceUpdate(){if(window.fcSoon&&!P.start)fcSoon();
   else if(!ri)note="The running average starts a couple of minutes after Start shift. Log the count about once an hour to see the last-interval rate.";
   else if(ri.avg<=0)note="No progress between logs yet, so no estimate.";
   else{
-    var hr0=rem/ri.avg,hrs=rem/(ri.base>0?ri.base:ri.avg)*ri.kNow,jf=(JOBS&&typeof jobFactor==="function")?jobFactor(curLot()):null;if(jf)hrs=hrs*jf.k;adjOn=Math.abs(hrs-hr0)>hr0*0.005;var fin=now+hrs*3600000;
+    var hr0=rem/ri.avg,hrs=rem/(ri.base>0?ri.base:ri.avg)*ri.kNow,bf=typeof blkFactor==="function"?blkFactor():null,jf=bf?null:((JOBS&&typeof jobFactor==="function")?jobFactor(curLot()):null);if(bf)hrs=hrs*bf.k;else if(jf)hrs=hrs*jf.k;adjOn=Math.abs(hrs-hr0)>hr0*0.005;var fin=now+hrs*3600000;
     eta=fmtT(fin);var etaDay=new Date(fin).toDateString()!==new Date(now).toDateString()?new Date(fin).toLocaleDateString([],{weekday:"short"}):"";
     html+=st("Estimated finish",fmtT(fin)+" ("+fmtD(hrs)+" from now)","wide");
     note="Based on the running average since Start shift ("+ri.avg.toFixed(1)+" cars/hr), using the live count.";
     if(adjOn)html+=st("Without adjustments",fmtT(now+hr0*3600000)+" ("+fmtD(hr0)+" from now)","w2");
     if(ri.base>0&&Math.abs(ri.base-ri.avg)>ri.avg*0.005)note+=" Normal pace with condition time scaled back: "+ri.base.toFixed(1)+" cars/hr.";
     var al=adjLevel(now);if(al)note+=" Pace adjustment: "+adjTxt(al).toLowerCase()+" than the running average, so the time left is "+(al>0?"stretched":"shortened")+".";
+    if(bf)note+=" "+bf.txt;
     if(jf){
       note+=" Adjusted using "+jf.n+" past job"+(jf.n>1?"s":"")+(jf.lot?" mostly in "+LN(jf.lot):" (none yet in this yard, so all jobs)")+": they took "+pctTxt(jf.k)+".";}
     if(ri.last!=null&&ri.last>0){var h2=rem/ri.last;html+=st("Finish at last interval's rate",fmtT(now+h2*3600000)+" ("+fmtD(h2)+" from now)","w2");}
@@ -1294,7 +1295,7 @@ var MTK="blair_mtime_v1",MT={},PREV={};
 try{var mtv=JSON.parse(localStorage.getItem(MTK)||"null");if(mtv&&typeof mtv==="object")MT=mtv;}catch(e){MT={};}
 LOTS.forEach(function(L,i){PREV[L.name]=marksOf(i);if(!MT[L.name])MT[L.name]={};});
 function mtSave(){try{localStorage.setItem(MTK,JSON.stringify(MT));}catch(e){}}
-function trackTimes(){var now=Math.round(Date.now()/1000),lim=now-7200;
+function trackTimes(){var now=Math.round(Date.now()/1000),lim=now-7200;if(P&&P.start&&P.start/1000-600<lim)lim=Math.max(now-86400,Math.round(P.start/1000)-600);
   LOTS.forEach(function(L,i){var c=marksOf(i),pv=PREV[L.name],m=MT[L.name]||(MT[L.name]={}),k;
     if(pv){for(k in c)if(c[k]===1&&pv[k]!==1)m[k]=now;}
     for(k in m)if(c[k]!==1||m[k]<lim)delete m[k];
@@ -2438,6 +2439,94 @@ document.addEventListener("visibilitychange",function(){if(document.hidden){GHID
   if(GHID&&Date.now()-GHID>60000&&!GSUP){GUN=false;gShow();}GHID=0;});
 window.addEventListener("pageshow",function(e){if(e.persisted&&!GSUP){GUN=false;gShow();}});
 try{if(/supercargo/i.test(location.hash+location.search)){gOpen();DASH.open();}}catch(e){}
+
+/* ===== Block speeds: learn how long each block takes, compared with the rest of the same job =====
+   At Finish job, every car parked during the job is put in time order. The working time since the previous car
+   (pauses left out, condition time scaled back, gaps capped at 15 min) is credited to that car's block.
+   A block's speed for the job = its minutes per car / the job's minutes per car (1.10 = 10% slower than that job's average).
+   Comparing inside a job cancels out the vessel, foreman and number of drivers. Each block's learned speed is the
+   median over past jobs with at least 5 cars in it. The finish estimate then compares the blocks still to fill with
+   the blocks filled so far this shift. */
+var BLK_CAP=15*60000;
+function blkCars(start,fin){var o=[];
+  LOTS.forEach(function(L,i){var m=(MT&&MT[L.name])||{};for(var k in m){var t=m[k]*1000;if(!(t>=start&&t<=fin))continue;
+    var p=k.split(","),g=grid[i]?grid[i][(+p[0])*NC[i]+(+p[1])]:-1;if(g<0||sel[i][g]!==1)continue;
+    var b=bands[i][bandOf[i][g]];if(!b)continue;o.push({t:t,lot:L.name,b:b.name,r:+p[0],c:+p[1]});}});
+  o.sort(function(a,b){return a.t-b.t;});
+  var prev=start;o.forEach(function(x){x.w=Math.min(BLK_CAP,effMs(prev,x.t));if(x.t>prev)prev=x.t;});
+  return o;}
+function blkJob(start,fin,drv){var cs=blkCars(start,fin);if(cs.length<10)return null;
+  var by={},M=0,C=0;cs.forEach(function(x){var lb=by[x.lot]||(by[x.lot]={}),v=lb[x.b]||(lb[x.b]={c:0,m:0});v.c++;v.m+=x.w;M+=x.w;C++;});
+  if(!(M>0))return null;var avg=M/C,out={},n=0;
+  for(var l in by)for(var b in by[l]){var v=by[l][b];if(v.c<5||!(v.m>0))continue;
+    (out[l]=out[l]||{})[b]={c:v.c,m:+(v.m/60000).toFixed(1),r:+((v.m/v.c)/avg).toFixed(3),dm:drv>0?+((v.m/v.c/60000)*drv).toFixed(2):null};n++;}
+  return n?out:null;}
+var _jobBuild=jobBuild;
+jobBuild=function(fin,cars){var j=_jobBuild(fin,cars);try{var b=blkJob(P.start,fin,P.drivers||0);if(b)j.blk=b;}catch(e){console.warn("blocks",e);}return j;};
+function blkLearned(){var o={};
+  for(var id in JOBS){var j=JOBS[id];if(!j||!j.blk)continue;
+    for(var l in j.blk)for(var b in j.blk[l]){var v=j.blk[l][b];if(!v||!(v.r>0))continue;
+      var x=(o[l]=o[l]||{})[b]||(o[l][b]={r:[],dm:[],c:0});x.r.push(v.r);if(v.dm>0)x.dm.push(v.dm);x.c+=v.c||0;}}
+  for(var l2 in o)for(var b2 in o[l2]){var y=o[l2][b2];y.n=y.r.length;y.k=Math.max(0.5,Math.min(2.5,jMedian(y.r)));y.d=y.dm.length?jMedian(y.dm):null;}
+  return o;}
+function blkFactor(){if(!P.start)return null;var L=blkLearned();if(!Object.keys(L).length)return null;
+  var rk=function(l,b){return L[l]&&L[l][b]?L[l][b].k:null;};
+  var dn=0,dk=0;blkCars(P.start,Date.now()).forEach(function(x){var k=rk(x.lot,x.b);dn++;dk+=k||1;});
+  var on=0,ok=0,known=0,jobs={};
+  LOTS.forEach(function(Lt,i){if(!bands[i])return;blkState(i).forEach(function(b,j){if(isHid(i,j)||b.full||!(b.open>0))return;
+    var k=rk(Lt.name,b.name);on+=b.open;ok+=b.open*(k||1);if(k){known+=b.open;jobs[L[Lt.name][b.name].n]=1;}});});
+  if(!(on>0)||known/on<0.5)return null;
+  var fr=ok/on,fd=dn>=10?dk/dn:1,k=Math.max(0.6,Math.min(1.8,fr/fd));
+  var n=Math.max.apply(null,Object.keys(jobs).map(Number)),p=Math.round((k-1)*100);
+  var txt="Block speeds from past jobs: the blocks still to fill usually take "+(p===0?"about the same time per car as":Math.abs(p)+"% "+(p>0?"longer per car than":"less time per car than"))+
+    (dn>=10?" the blocks filled so far this shift":" an average block")+", so the time left is "+(p>0?"stretched":p<0?"shortened":"unchanged")+" (learned from up to "+n+" job"+(n>1?"s":"")+").";
+  return{k:k,n:n,txt:txt};}
+function blkPct(k){var p=Math.round((k-1)*100);return p===0?"average":Math.abs(p)+"% "+(p>0?"slower":"faster");}
+function blkTable(){var L=blkLearned(),ls=Object.keys(L);
+  if(!ls.length)return "<div class='tlh' style='margin-top:12px'><b>Block speeds</b></div><div class='pnote'>Nothing learned yet. After each job, tap Finish job. The app learns how long each block takes compared with the rest of that job, and uses it in the next finish estimates.</div>";
+  var h="<div class='tlh' style='margin-top:12px'><b>Block speeds</b></div><div class='pnote'>How long each block takes per car, compared with the average block in the same job. Driver-minutes per car is how long one driver takes to bring one car to that block.</div><table class='plog'><tr><th>Block</th><th>Speed</th><th>Driver-min per car</th><th>Jobs</th></tr>";
+  ls.sort(function(a,b){return lotIdx(a)-lotIdx(b);}).forEach(function(l){
+    h+="<tr><td colspan='4' style='padding-top:8px'><b>"+esc(LN(l))+"</b></td></tr>";
+    Object.keys(L[l]).sort(function(a,b){return a.length-b.length||(a<b?-1:a>b?1:0);}).forEach(function(b){var y=L[l][b];
+      var col=y.k>=1.1?"#c2402f":y.k<=0.9?"#2f7d32":"inherit";
+      h+="<tr><td>"+esc(b)+"</td><td style='color:"+col+";font-weight:700'>"+blkPct(y.k)+"</td><td>"+(y.d?y.d.toFixed(1):"-")+"</td><td>"+y.n+"</td></tr>";});});
+  return h+"</table>";}
+var _jobsRender=jobsRender;
+jobsRender=function(){_jobsRender();var el=document.getElementById("jobsec");if(el){var d=document.createElement("div");d.id="blksec";d.innerHTML=blkTable();el.appendChild(d);}};
+
+/* ===== Download shift: every car parked this shift, as a spreadsheet (CSV) ===== */
+function shiftRange(){if(P.start)return{s:P.start,f:Date.now(),live:true};
+  var ids=Object.keys(JOBS).sort(function(a,b){return JOBS[b].finish-JOBS[a].finish;});
+  if(ids.length){var j=JOBS[ids[0]];return{s:j.start,f:j.finish,live:false};}return null;}
+function csvQ(v){v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function shiftCSV(){var r=shiftRange();if(!r){shToast("Tap Start shift first. The download covers cars parked since then.");return;}
+  var cs=blkCars(r.s,r.f);if(!cs.length){shToast("No cars parked since "+fmtT(r.s)+" to download.");return;}
+  var d=function(t){var x=new Date(t);return x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2);};
+  var tm=function(t){var x=new Date(t);return ("0"+x.getHours()).slice(-2)+":"+("0"+x.getMinutes()).slice(-2)+":"+("0"+x.getSeconds()).slice(-2);};
+  var lines=[["Date","Time","Yard","Block","Grid row","Grid column","Working minutes since previous car","Vessel","Foreman","Drivers"].join(",")];
+  cs.forEach(function(x){lines.push([d(x.t),tm(x.t),csvQ(LN(x.lot)),csvQ(x.b),x.r,x.c,(x.w/60000).toFixed(2),csvQ(P.vessel||""),csvQ(P.foreman||""),P.drivers||""].join(","));});
+  var name="Car Ship shift "+d(r.s)+(P.vessel?" "+P.vessel.replace(/[^A-Za-z0-9 \-]/g,""):"")+".csv";
+  var blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv"}),f=null;
+  try{f=new File([blob],name,{type:"text/csv"});}catch(e){}
+  if(f&&navigator.canShare&&navigator.canShare({files:[f]})&&/iP(hone|ad|od)|Android/.test(navigator.userAgent)){navigator.share({files:[f],title:name}).catch(function(){});return;}
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);shToast("Downloaded "+cs.length.toLocaleString()+" cars ("+name+").");}
+(function(){var bl=document.getElementById("yreset");if(!bl)return;var b=document.createElement("button");b.id="shiftcsv";b.textContent="Download shift";
+  bl.parentNode.insertBefore(b,bl.nextSibling);bl.parentNode.insertBefore(document.createTextNode(" "),b);b.onclick=shiftCSV;})();
+
+/* ===== Save the shift before clearing it ===== */
+function shiftCarsSoFar(){if(!P.start||!P.log.length||!P.log[0].w)return 0;return wSum(wLots(P.log[0].w,workSnap()));}
+function saveFirst(next){var n=shiftCarsSoFar();if(!(n>0)){next();return;}
+  var sh=ov("<h3>Save this shift first?</h3><p class='sm'>"+n.toLocaleString()+" car"+(n===1?"":"s")+" parked since Start shift ("+fmtT(P.start)+") haven't been saved as a job.</p>"+
+    "<p class='nt'>Finish job saves the block speeds, so future finish estimates can learn from this shift.</p>"+
+    "<div class='btns' style='flex-wrap:wrap'><button id='sfno'>Cancel</button><button id='sfskip'>Don't save</button><button id='sfok' class='pri'>Finish job first</button></div>");
+  sh.querySelector("#sfno").onclick=ovClose;
+  sh.querySelector("#sfskip").onclick=function(){ovClose();next();};
+  sh.querySelector("#sfok").onclick=function(){ovClose();finishDlg();};}
+document.getElementById("yreset").onclick=function(){saveFirst(yardResetDlg);};
+(function(){var pn=document.getElementById("pnew"),o=pn.onclick;pn.onclick=function(){saveFirst(function(){o.call(pn);});};})();
+jobsRender();
+
 </script>
 </body>
 </html>
