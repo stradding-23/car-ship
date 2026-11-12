@@ -2455,11 +2455,23 @@ function blkCars(start,fin){var o=[];
   o.sort(function(a,b){return a.t-b.t;});
   var prev=start;o.forEach(function(x){x.w=Math.min(BLK_CAP,effMs(prev,x.t));if(x.t>prev)prev=x.t;});
   return o;}
-function blkJob(start,fin,drv){var cs=blkCars(start,fin);if(cs.length<10)return null;
-  var by={},M=0,C=0;cs.forEach(function(x){var lb=by[x.lot]||(by[x.lot]={}),v=lb[x.b]||(lb[x.b]={c:0,m:0});v.c++;v.m+=x.w;M+=x.w;C++;});
-  if(!(M>0))return null;var avg=M/C,out={},n=0;
-  for(var l in by)for(var b in by[l]){var v=by[l][b];if(v.c<5||!(v.m>0))continue;
-    (out[l]=out[l]||{})[b]={c:v.c,m:+(v.m/60000).toFixed(1),r:+((v.m/v.c)/avg).toFixed(3),dm:drv>0?+((v.m/v.c/60000)*drv).toFixed(2):null};n++;}
+/* Block completion timing: each block's time runs from the previous block-full time (or Start shift) to its own
+   full time, in working time. Blocks that fill within 3 minutes of each other share that stretch by car count.
+   A block still not full at Finish job ends at the finish time. This only needs the moment each block is full,
+   not every car. */
+function blkJob(start,fin,drv){if(!P.log||!P.log.length||!P.log[0].w)return null;
+  var w0=P.log[0].w,w1=workSnap(),ev=[];
+  for(var l in w1){var bm=w1[l]||{},am=(w0&&w0[l])||{},ft=(FT&&FT[l])||{};
+    for(var b in bm){var c=bm[b]-(am[b]||0);if(c<=0)continue;var t=ft[b],f=t>start&&t<=fin?1:0;if(!f)t=fin;ev.push({lot:l,b:b,c:c,t:t,f:f});}}
+  if(ev.length<2)return null;ev.sort(function(a,b){return a.t-b.t;});
+  var grp=[],prev=start;
+  ev.forEach(function(e){var g=grp[grp.length-1];if(g&&e.t-g.t<=180000)g.e.push(e);else grp.push({t:e.t,e:[e]});});
+  if(grp.length<2)return null;
+  var C=0,M=0;grp.forEach(function(g){var w=effMs(prev,g.t);prev=g.t;var gc=0;g.e.forEach(function(e){gc+=e.c;});
+    g.e.forEach(function(e){e.w=gc?w*e.c/gc:0;});C+=gc;M+=w;});
+  if(!(M>0)||!(C>0))return null;var avg=M/C,out={},n=0;
+  ev.forEach(function(e){if(e.c<5||!(e.w>0))return;
+    (out[e.lot]=out[e.lot]||{})[e.b]={c:e.c,m:+(e.w/60000).toFixed(1),r:+((e.w/e.c)/avg).toFixed(3),dm:drv>0?+((e.w/e.c/60000)*drv).toFixed(2):null,full:e.f};n++;});
   return n?out:null;}
 var _jobBuild=jobBuild;
 jobBuild=function(fin,cars){var j=_jobBuild(fin,cars);try{var b=blkJob(P.start,fin,P.drivers||0);if(b)j.blk=b;}catch(e){console.warn("blocks",e);}return j;};
@@ -2471,7 +2483,7 @@ function blkLearned(){var o={};
   return o;}
 function blkFactor(){if(!P.start)return null;var L=blkLearned();if(!Object.keys(L).length)return null;
   var rk=function(l,b){return L[l]&&L[l][b]?L[l][b].k:null;};
-  var dn=0,dk=0;blkCars(P.start,Date.now()).forEach(function(x){var k=rk(x.lot,x.b);dn++;dk+=k||1;});
+  var dn=0,dk=0;if(P.log&&P.log.length&&P.log[0].w){var dd=P.log[0].w,ww=workSnap();for(var l0 in ww)for(var b0 in ww[l0]){var cc=ww[l0][b0]-((dd[l0]||{})[b0]||0);if(cc>0){dn+=cc;dk+=cc*(rk(l0,b0)||1);}}}
   var on=0,ok=0,known=0,jobs={};
   LOTS.forEach(function(Lt,i){if(!bands[i])return;blkState(i).forEach(function(b,j){if(isHid(i,j)||b.full||!(b.open>0))return;
     var k=rk(Lt.name,b.name);on+=b.open;ok+=b.open*(k||1);if(k){known+=b.open;jobs[L[Lt.name][b.name].n]=1;}});});
@@ -2484,7 +2496,7 @@ function blkFactor(){if(!P.start)return null;var L=blkLearned();if(!Object.keys(
 function blkPct(k){var p=Math.round((k-1)*100);return p===0?"average":Math.abs(p)+"% "+(p>0?"slower":"faster");}
 function blkTable(){var L=blkLearned(),ls=Object.keys(L);
   if(!ls.length)return "<div class='tlh' style='margin-top:12px'><b>Block speeds</b></div><div class='pnote'>Nothing learned yet. After each job, tap Finish job. The app learns how long each block takes compared with the rest of that job, and uses it in the next finish estimates.</div>";
-  var h="<div class='tlh' style='margin-top:12px'><b>Block speeds</b></div><div class='pnote'>How long each block takes per car, compared with the average block in the same job. Driver-minutes per car is how long one driver takes to bring one car to that block.</div><table class='plog'><tr><th>Block</th><th>Speed</th><th>Driver-min per car</th><th>Jobs</th></tr>";
+  var h="<div class='tlh' style='margin-top:12px'><b>Block speeds</b></div><div class='pnote'>How long each block takes per car, compared with the average block in the same job. Timed from when each block fills up, so you only need to keep the count current when a block is done. Driver-minutes per car is how long one driver takes to bring one car to that block.</div><table class='plog'><tr><th>Block</th><th>Speed</th><th>Driver-min per car</th><th>Jobs</th></tr>";
   ls.sort(function(a,b){return lotIdx(a)-lotIdx(b);}).forEach(function(l){
     h+="<tr><td colspan='4' style='padding-top:8px'><b>"+esc(LN(l))+"</b></td></tr>";
     Object.keys(L[l]).sort(function(a,b){return a.length-b.length||(a<b?-1:a>b?1:0);}).forEach(function(b){var y=L[l][b];
