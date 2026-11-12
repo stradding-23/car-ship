@@ -334,7 +334,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
   <span class="sp"></span>
   <button id="walkb">Walk fill</button>
   <button id="copyb">Copy count</button>
-  <button id="bossb">Boss view</button>
+  <button id="bossb">QR</button>
   <button id="dashb">Dashboard</button>
   <button id="tlb">Timed log</button>
   <button id="clr">Clear shown</button>
@@ -2253,7 +2253,29 @@ function bvSheet(){
     var t=document.createElement("div");t.className="nt";t.textContent="Your boss scans this with their phone camera. Works until "+new Date(Date.now()+12*3600000).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"})+". Press and hold the picture to save or share it.";bx.appendChild(t);bvStatus("");};
   sh.querySelector("#bvlk").onclick=function(){rd();var l=bvLink();if(!l){bvStatus("Enter where the boss page is hosted first, and the database address and board name.");return;}
     try{navigator.clipboard.writeText(l).then(function(){bvStatus("Boss link copied.");},function(){bvStatus(l);});}catch(e){bvStatus(l);}};}
-document.getElementById("bossb").onclick=bvSheet;
+function qrSheet(){var K="blair_qr_v1",cfg={a:"https://stradding-23.github.io/car-ship/",m:"c"};
+  try{var sv=JSON.parse(localStorage.getItem(K)||"null");if(sv){cfg.a=sv.a||cfg.a;cfg.m=sv.m||cfg.m;}}catch(e){}
+  var sh=ov('<h3>Share with another phone</h3><div class="nt">Point the other phone\'s camera at the code. It opens the page.</div>'+
+    '<div style="display:flex;gap:6px;margin:10px 0"><button id="qrc" class="chip" style="flex:1;margin:0">Counter</button><button id="qrs" class="chip" style="flex:1;margin:0">Supercargo view</button></div>'+
+    '<div id="qrbox" style="text-align:center"></div><div class="nt" id="qrlink" style="word-break:break-all;text-align:center"></div>'+
+    '<label for="qradr">Page address</label><input id="qradr" type="url" inputmode="url" value="'+esc(cfg.a)+'">'+
+    '<div class="btns" style="flex-wrap:wrap"><button id="qrno">Close</button><button id="qrlock">Lock</button><button id="qrcp" class="pri">Copy link</button></div>');
+  function link(){var a=sh.querySelector("#qradr").value.trim().split("#")[0];return a+(cfg.m==="s"?"#supercargo":"");}
+  function render(){var l=link(),bx=sh.querySelector("#qrbox");bx.innerHTML="";
+    sh.querySelector("#qrc").classList.toggle("on",cfg.m==="c");sh.querySelector("#qrs").classList.toggle("on",cfg.m==="s");
+    try{localStorage.setItem(K,JSON.stringify({a:sh.querySelector("#qradr").value.trim(),m:cfg.m}));}catch(e){}
+    sh.querySelector("#qrlink").textContent=l;
+    if(!/^https?:\/\//i.test(l)){bx.textContent="Enter the page address, starting with https://";return;}
+    var c=qrCanvas(l,300);if(!c){bx.textContent="That address is too long for a QR code.";return;}
+    var im=new Image();im.src=c.toDataURL("image/png");im.alt="QR code";im.style.cssText="width:min(300px,80vw);height:auto;image-rendering:pixelated;border:1px solid #ccd;border-radius:8px";bx.appendChild(im);}
+  sh.querySelector("#qrc").onclick=function(){cfg.m="c";render();};
+  sh.querySelector("#qrs").onclick=function(){cfg.m="s";render();};
+  sh.querySelector("#qradr").oninput=render;
+  sh.querySelector("#qrno").onclick=ovClose;
+  sh.querySelector("#qrlock").onclick=function(){ovClose();GUN=false;gShow();};
+  sh.querySelector("#qrcp").onclick=function(){var l=link();try{navigator.clipboard.writeText(l).then(function(){shToast("Link copied.");},function(){shToast(l);});}catch(e){shToast(l);}};
+  render();}
+document.getElementById("bossb").onclick=qrSheet;
 setTimeout(bvTick,3000);
 
 /* Small QR code encoder (byte mode, error correction L or M, versions 1-15) */
@@ -2378,7 +2400,6 @@ function draw(){
     '<div class="t"><span>Cars/last hr</span><b>'+esc(D.last||"–")+'</b></div><div class="t"><span>Est. finish</span><b>'+esc(D.eta||"–")+'</b></div><div class="t"><span>Shift started</span><b>'+(D.started?tm(D.started):"–")+'</b></div></div>'+
     '<div id="dsstale"></div></div>';
   h+='<div class="card"><div class="hh"><h2>Pace</h2><small>cars parked per 15 min</small></div>'+paceSvg()+'</div>';
-  h+=logCard();
   var L=D.lots||[],i;
   L.forEach(function(l,i){var rows=l.rows||[],nf=rows.filter(function(r){return r.f===1;}).length,fl=-1;
     h+='<div class="card"><div class="hh"><h2>'+(i===0?'Yard map':'')+'</h2><small>'+esc(l.lot)+'</small></div>'+
@@ -2412,6 +2433,10 @@ document.getElementById("gview").onclick=function(){gOpen();DASH.open();};
 document.getElementById("dsback").onclick=function(){DASH.close();if(!GUN)gShow();};
 document.getElementById("dashb").onclick=function(){DASH.open();};
 if(GUN)gOpen();
+var GHID=0,GSUP=/supercargo/i.test(location.hash+location.search);
+document.addEventListener("visibilitychange",function(){if(document.hidden){GHID=Date.now();return;}
+  if(GHID&&Date.now()-GHID>60000&&!GSUP){GUN=false;gShow();}GHID=0;});
+window.addEventListener("pageshow",function(e){if(e.persisted&&!GSUP){GUN=false;gShow();}});
 try{if(/supercargo/i.test(location.hash+location.search)){gOpen();DASH.open();}}catch(e){}
 </script>
 </body>
