@@ -300,8 +300,12 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 #spcol{display:flex;flex-direction:column;gap:5px}
 .spb{width:calc(var(--sz) * 1.45);height:var(--sz);min-height:0!important;padding:0;margin:0;border-radius:8px;border:2px solid #b8a65a;background:var(--empty);font-size:calc(var(--sz) * .5);font-weight:800;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .spb.car{background:#9cc0f5;border-color:#9cc0f5}.spb.sel{background:var(--car);border-color:#0d3b8a;border-width:4px;color:#fff;font-size:calc(var(--sz) * .34)}.spb.blk{background:var(--blk);border-color:var(--blk);color:var(--ink)}.spb.none{visibility:hidden}
-#spball{width:110px;height:72px;border-radius:50%;background:#1f5fbf;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 4px 14px rgba(0,0,0,.35);margin-top:4px;cursor:pointer}
-#spball{transition:transform .12s}#spball.dn{transition:none}#spball span{font-size:17px;font-weight:800}#spball small{font-size:11px;opacity:.9}#spball.dn{background:#174a96}
+#spball{position:relative;width:236px;height:66px;border-radius:33px;margin-top:6px;background:linear-gradient(180deg,#dfe6f0,#eef2f7);box-shadow:inset 0 2px 6px rgba(0,0,0,.18),0 1px 0 rgba(255,255,255,.6);border:1px solid #c5d0de;display:flex;align-items:center;justify-content:space-between;padding:0 18px;box-sizing:border-box;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#spball .chv{font-style:normal;font-size:18px;letter-spacing:-6px;color:#9aabc2;transition:color .15s,transform .15s}#spball .chv.l{margin-left:-4px}#spball .chv.r{margin-right:2px}
+#spball.gl .chv.l,#spball.gr .chv.r{color:#1f5fbf;transform:scale(1.15)}
+#spball .knob{position:absolute;left:50%;top:50%;width:56px;height:56px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 30%,#6ea2ff,#2563eb 55%,#1846b3);box-shadow:0 4px 10px rgba(24,70,179,.45),inset 0 -3px 6px rgba(0,0,0,.2),inset 0 2px 3px rgba(255,255,255,.35);transition:transform .25s cubic-bezier(.2,.9,.3,1.3)}
+#spball.dn .knob{transition:none;box-shadow:0 6px 16px rgba(24,70,179,.55),inset 0 -3px 6px rgba(0,0,0,.2),inset 0 2px 3px rgba(255,255,255,.35)}
+@media (prefers-color-scheme:dark){#spball{background:linear-gradient(180deg,#232a33,#2c343e);border-color:#3a414b}#spball .chv{color:#5d6b7c}}
 #sphl{display:none;position:absolute;border:3px solid #e53935;border-radius:4px;pointer-events:none;z-index:5;box-sizing:border-box}
 body.padon #brushf{right:12px}
 @media (orientation:landscape) and (max-height:520px){#spad{left:auto;right:150px;bottom:10px;transform:none;flex-direction:row;align-items:center;gap:10px}#spcol{order:2}#spball{order:3}}
@@ -414,7 +418,7 @@ body.padon #brushf{right:12px}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-202017";
+var APPV="2026-11-13-202325";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2586,7 +2590,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spnum"></div><div id="spcol"></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><span>&lsaquo; hold &amp; slide &rsaquo;</span><small>farther = faster</small></div>';
+  box.id="spad";box.innerHTML='<div id="spnum"></div><div id="spcol"></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&(tool===0||tool===1)&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2627,14 +2631,14 @@ jobsRender();
     F.forEach(function(x){one(x,v);});E.forEach(function(x){one(x,0);});
     if(ch){pushUndo({k:"m",m:snap0,a:marksOf(cur)});save();renderRows();counts();if(typeof fUI==="function")fUI();}}
   function move(d){var cs=cols(),n=Math.max(0,Math.min(cs.length-1,PD.ci+d));if(n===PD.ci)return;PD.ci=n;PD.follow=true;fillHere();render();try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
-  var ball=document.getElementById("spball"),sx=null,cx0=0,acc=0,moved=false,raf2=0,lt=0,DZ=32;
+  var ball=document.getElementById("spball"),knob=ball.querySelector(".knob"),sx=null,cx0=0,acc=0,moved=false,raf2=0,lt=0,DZ=32;
   function loop(){if(sx===null){clearInterval(raf2);raf2=0;return;}var t=Date.now(),dx=cx0-sx,ad=Math.abs(dx),dt=lt?(t-lt)/1000:0;lt=t;
-    ball.style.transform="translateX("+Math.max(-100,Math.min(100,dx*0.8))+"px)";
+    var kx=Math.max(-82,Math.min(82,dx*0.8));knob.style.transform="translate(-50%,-50%) translateX("+kx+"px)";ball.classList.toggle("gl",kx<-20);ball.classList.toggle("gr",kx>20);
     if(ad>DZ){var rate=Math.min(20,1+Math.pow((ad-DZ)/14,1.5));if(!moved&&acc===0)acc=0.6;acc+=rate*dt;while(acc>=1){acc-=1;move(dx>0?1:-1);moved=true;}}else acc=0;
   }
   ball.addEventListener("pointerdown",function(e){e.preventDefault();try{ball.setPointerCapture(e.pointerId);}catch(x){}sx=e.clientX;cx0=e.clientX;acc=0;moved=false;lt=0;ball.classList.add("dn");if(!raf2)raf2=setInterval(loop,30);});
   ball.addEventListener("pointermove",function(e){if(sx===null)return;e.preventDefault();cx0=e.clientX;});
-  function upb(e){if(sx===null)return;ball.classList.remove("dn");ball.style.transform="";var wasTap=!moved&&Math.abs(e.clientX-sx)<10&&e.type==="pointerup";sx=null;if(raf2){clearInterval(raf2);raf2=0;}
+  function upb(e){if(sx===null)return;ball.classList.remove("dn","gl","gr");knob.style.transform="";var wasTap=!moved&&Math.abs(e.clientX-sx)<10&&e.type==="pointerup";sx=null;if(raf2){clearInterval(raf2);raf2=0;}
     if(wasTap)move(1);}
   ball.addEventListener("pointerup",upb);ball.addEventListener("pointercancel",upb);
   var c0=counts;counts=function(){var r=c0.apply(this,arguments);try{render();}catch(e){}return r;};
