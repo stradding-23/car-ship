@@ -386,6 +386,7 @@ body.pv{background:var(--aisle)}body.pv .fbar.on{margin:8px 10px 0;padding:6px;b
 body.pv .fbar button{border-radius:12px!important;border:1px solid var(--line);background:var(--card);box-shadow:0 1px 3px rgba(15,23,42,.08)}
 body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!important;font-size:32px!important;font-weight:700}body.pv .fbar #fnext.go{min-width:96px;font-size:18px!important}body.pv .fbar #fall{min-height:58px!important}body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
 #spsc #sclog{color:#fff;background:#2f7d32;border-color:#2f7d32;font-weight:800}#spsc #sclog.flash{background:#1f5fbf;border-color:#1f5fbf}
+#lunchb{width:100%;min-height:52px;border-radius:14px;border:1px solid #c2410c;background:#fff7ed;color:#9a3412;font:800 17px system-ui,sans-serif;margin:0}#lunchb.on{background:#2f7d32;border-color:#2f7d32;color:#fff}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -450,6 +451,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="rowsp" id="rowsp"></div>
 <div class="rowsp" id="tlogp">
   <div class="tlh"><b>Timed log</b><span id="tlnext" class="pnote"></span><button id="tldone" type="button">Done</button></div>
+  <div id="lunchbox" style="margin:8px 0 10px"><button id="lunchb" type="button"></button><div id="lunchn" class="pnote" style="margin-top:4px"></div></div>
   <div class="pnote">Log times (used every day)</div>
   <div id="tltimes" style="margin:4px 0"></div>
   <div class="tlrow"><input id="tlnew" type="time" step="60"><button id="tladd">Add time</button></div>
@@ -500,7 +502,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-213140";
+var APPV="2026-11-13-213739";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -1093,23 +1095,36 @@ if(!Array.isArray(P.pauses))P.pauses=[];
 /* pauses (standby, lunch, coffee): left out of every rate and the finish estimate */
 function pzList(now){var a=(P.pauses||[]).map(function(p){return[p.s,p.e||now];}).filter(function(x){return x[1]>x[0];}).sort(function(x,y){return x[0]-y[0];}),o=[];
   a.forEach(function(x){var l=o[o.length-1];if(l&&x[0]<=l[1])l[1]=Math.max(l[1],x[1]);else o.push(x.slice());});return o;}
-function pzActive(){return(P.pauses||[]).some(function(p){return !p.e;});}
-function pzSince(){var s=null;(P.pauses||[]).forEach(function(p){if(!p.e&&(s===null||p.s<s))s=p.s;});return s;}
+function pzActive(){var n=Date.now();return(P.pauses||[]).some(function(p){return !p.e||(p.e>n&&p.s<=n);});}
+function pzSince(){var s=null,n=Date.now();(P.pauses||[]).forEach(function(p){if((!p.e||p.e>n)&&(s===null||p.s<s))s=p.s;});return s;}
+function pzCur(){var n=Date.now(),c=null;(P.pauses||[]).forEach(function(p){if((!p.e||p.e>n)&&p.s<=n)c=p;});return c;}
 function pausedMs(a,b){var n=0;pzList(Date.now()).forEach(function(x){var s=Math.max(a,x[0]),e=Math.min(b,x[1]);if(e>s)n+=e-s;});return n;}
 function workMs(a,b){return Math.max(0,b-a-pausedMs(a,b));}
 function workBack(now,ms){var L=pzList(now),t=now,rem=ms;
   for(var i=L.length-1;i>=0;i--){var q=L[i];if(q[0]>=t)continue;var gap=t-Math.min(q[1],t);if(gap>=rem)return t-rem;rem-=gap;t=q[0];}
   return t-rem;}
 function pzToggle(){var now=Date.now();
-  if(pzActive())P.pauses.forEach(function(q){if(!q.e)q.e=now;});else P.pauses.push({s:now});
+  if(pzActive())P.pauses.forEach(function(q){if(!q.e||q.e>now)q.e=now;});else P.pauses.push({s:now});
   psave();plogRender();paceUpdate();if(typeof mhUpdate==="function")mhUpdate();}
 function pzUI(){var on=pzActive(),st=!!P.start,b=document.getElementById("pzb"),b2=document.getElementById("pzb2"),bar=document.getElementById("pzbar");
   b.style.display=st||on?"":"none";b2.style.display=st||on?"":"none";
   b.textContent=on?"Resume":"Pause";b.classList.toggle("on",on);b2.textContent=on?"Resume":"Pause";
   if(on){var s=pzSince(),m=Math.floor((Date.now()-s)/60000);
-    bar.innerHTML="<b>Receiving paused</b><span>since "+fmtT(s)+" \u00b7 "+(m<60?m+" min":fmtD(m/60))+"</span><button id='pzres'>Resume</button>";
+    var cq=pzCur(),lu=cq&&cq.w==="lunch";bar.innerHTML="<b>"+(lu?"At lunch":"Receiving paused")+"</b><span>since "+fmtT(s)+(lu&&cq.e?" \u00b7 back at "+fmtT(cq.e):" \u00b7 "+(m<60?m+" min":fmtD(m/60)))+"</span><button id='pzres'>"+(lu?"Back to work":"Resume")+"</button>";
     bar.classList.add("on");document.getElementById("pzres").onclick=pzToggle;}
   else{bar.classList.remove("on");bar.innerHTML="";}}
+/* ---- going to lunch: day shift = paused until 1:00 PM (auto back to work); night shift = paused until tapped back ---- */
+function lunchDay(n){var h=new Date(n).getHours();return h>=5&&h<17;}
+function lunchUI(){var b=document.getElementById("lunchb"),t=document.getElementById("lunchn");if(!b)return;var n=Date.now(),c=pzCur(),lu=c&&c.w==="lunch";
+  if(lu){b.textContent="Back from lunch";b.classList.add("on");t.textContent="At lunch since "+fmtT(c.s)+(c.e?". Work starts again by itself at "+fmtT(c.e)+".":". Tap when work starts again.");}
+  else{var d=new Date(n),one=new Date(d.getFullYear(),d.getMonth(),d.getDate(),13,0,0,0).getTime(),day=lunchDay(n)&&n<one;
+    b.textContent=day?"Going to lunch (until 1:00 PM)":"Going to lunch";b.classList.remove("on");
+    t.textContent=day?"Stops the clock now. Rates and the finish time skip lunch, and work starts again at 1:00 PM by itself.":"Night shift: stops the clock now. Tap Back from lunch when work starts again.";}}
+function lunchGo(){var n=Date.now(),c=pzCur();
+  if(c&&c.w==="lunch"){c.e=n;}
+  else{if(pzActive())P.pauses.forEach(function(q){if(!q.e||q.e>n)q.e=n;});var d=new Date(n),one=new Date(d.getFullYear(),d.getMonth(),d.getDate(),13,0,0,0).getTime(),q={s:n,w:"lunch"};if(lunchDay(n)&&n<one)q.e=one;P.pauses.push(q);}
+  psave();plogRender();paceUpdate();if(typeof mhUpdate==="function")mhUpdate();pzUI();lunchUI();}
+setInterval(function(){try{lunchUI();pzUI();}catch(e){}},15000);
 function pLocal(){try{localStorage.setItem(PK,JSON.stringify(P));}catch(e){}}
 function psave(){pLocal();if(SH&&SH.pace&&!SH.off)SH.pace.local();}
 function fmtT(ms){return new Date(ms).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});}
@@ -1238,7 +1253,7 @@ function workDiff(a,b){
 }
 document.getElementById("pstart").onclick=function(){var n=Date.now();P.start=n;P.log=[{t:n,n:TOT,w:workSnap()}];P.pauses=[];P.conds=[];Object.keys(P.pre||{}).forEach(function(id){if(P.pre[id]&&CF[id])P.conds.push({c:id,s:n});});P.pre={};CLC=null;psave();plogRender();paceUpdate();};
 document.getElementById("plogb").onclick=function(){P.log.push({t:Date.now(),n:TOT,w:workSnap()});psave();plogRender();paceUpdate();};
-document.getElementById("pzb").onclick=pzToggle;document.getElementById("pzb2").onclick=pzToggle;
+document.getElementById("lunchb").onclick=lunchGo;lunchUI();document.getElementById("pzb").onclick=pzToggle;document.getElementById("pzb2").onclick=pzToggle;
 document.getElementById("pnew").onclick=function(){ask("Start a new shift? This clears the log and target. Cars on the lot map are not changed.","New shift",doNew);};
 function doNew(){
   P={target:null,start:null,log:[],pauses:[],conds:[],drivers:P.drivers};psave();document.getElementById("ptarget").value="";plogRender();paceUpdate();fcRender();}
@@ -1519,13 +1534,13 @@ function shMarks(){if(!SH||!SH.db||SH.off)return;LOTS.forEach(function(L){shMark
 function shUndefer(){if(!SH)return;var d=SH.defer;SH.defer=[];d.forEach(function(u){u.applyRem();});}
 function shPaceState(){var o={},lg={};if(P.target!=null)o.target=P.target;if(P.start)o.start=P.start;if(P.drivers>0)o.drivers=P.drivers;
   (P.log||[]).forEach(function(e){lg[String(e.t)]=e;});o.log=lg;
-  var pz={};(P.pauses||[]).forEach(function(q){var x={s:q.s};if(q.e)x.e=q.e;pz[String(q.s)]=x;});o.pauses=pz;
+  var pz={};(P.pauses||[]).forEach(function(q){var x={s:q.s};if(q.e)x.e=q.e;if(q.w)x.w=q.w;pz[String(q.s)]=x;});o.pauses=pz;
   if(P.vessel)o.vessel=P.vessel;if(P.foreman)o.foreman=P.foreman;if(P.berth)o.berth=P.berth;if(YARDS.length>1)o.yard=YARD;
   var cd={};(P.conds||[]).forEach(function(q){var x={c:q.c,s:q.s};if(q.e!=null)x.e=q.e;cd[q.c+"@"+q.s]=x;});o.conds=cd;return o;}
 function shPaceApply(e){P.target=e.target!=null?e.target:null;P.start=e.start||null;P.drivers=e.drivers>0?e.drivers:null;
   var lg=e.log||{};P.log=Object.keys(lg).map(function(k){return lg[k];}).filter(function(x){return x&&typeof x.t==="number";}).sort(function(a,b){return a.t-b.t;});
   var pz=e.pauses||{};P.pauses=Object.keys(pz).map(function(k){return pz[k];}).filter(function(x){return x&&typeof x.s==="number";})
-    .map(function(x){var o={s:x.s};if(typeof x.e==="number")o.e=x.e;return o;}).sort(function(a,b){return a.s-b.s;});
+    .map(function(x){var o={s:x.s};if(typeof x.e==="number")o.e=x.e;if(typeof x.w==="string")o.w=x.w;return o;}).sort(function(a,b){return a.s-b.s;});
   if(YARDS.length>1&&typeof e.yard==="string"&&e.yard!==YARD)setTimeout(function(){setYard(e.yard);},0);P.vessel=typeof e.vessel==="string"?e.vessel:null;P.foreman=typeof e.foreman==="string"?e.foreman:null;P.berth=(e.berth==="Blair"||e.berth==="P-7")?e.berth:null;
   var cd=e.conds||{};P.conds=Object.keys(cd).map(function(k){return cd[k];}).filter(function(x){return x&&typeof x.s==="number"&&typeof x.c==="string";})
     .map(function(x){var o={c:x.c,s:x.s};if(typeof x.e==="number")o.e=x.e;return o;}).sort(function(a,b){return a.s-b.s;});
