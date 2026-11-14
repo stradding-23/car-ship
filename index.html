@@ -2375,7 +2375,7 @@ function paintMaps(){
   }
 }
 
-var logOpen=false,logDay="";
+var logOpen=true,logDay="";
 function logCard(){
   var logs=(typeof TL!=="undefined"&&TL.logs)||{},today=dkey(new Date()),ds=Object.keys(logs);if(ds.indexOf(today)<0)ds.push(today);ds.sort().reverse();
   if(!logDay||ds.indexOf(logDay)<0)logDay=today;
@@ -2390,6 +2390,9 @@ function logCard(){
   t+='</table>';
   var opt=ds.map(function(k){var p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]);return '<option value="'+k+'"'+(k===logDay?' selected':'')+'>'+(k===today?'Today, ':'')+dt.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})+'</option>';}).join("");
   return '<div class="card"><details id="dslogd"'+(logOpen?' open':'')+'><summary><span>Log</span><small>'+n+' logged'+(isToday?' today':'')+'</small></summary><div style="margin-top:10px"><select id="dslogsel">'+opt+'</select>'+t+'</div></details></div>';}
+function lastLog(){try{var logs=(typeof TL!=="undefined"&&TL.logs)||{},rec=logs[dkey(new Date())]||{},ks=Object.keys(rec).sort();if(!ks.length)return'';
+  var k=ks[ks.length-1],e=rec[k],p=ks.length>1?rec[ks[ks.length-2]]:null;
+  return '<div class="prog" style="margin-top:10px"><span>Last log '+esc(fmtHM(k))+'</span><b>'+f(e.n)+' cars'+(p?' ('+(e.n-p.n>=0?'+':'')+(e.n-p.n)+')':'')+'</b></div>';}catch(x){return'';}}
 function draw(){
   if(!D)return;
   var done=D.done|0,tg=D.target>0?D.target:null,togo=tg!=null?Math.max(0,tg-done):null,pct=tg?Math.min(100,done/tg*100):0;
@@ -2399,7 +2402,8 @@ function draw(){
     '<div class="prog"><span>Cars done'+(tg!=null?' of target':'')+'</span><b>'+f(done)+(tg!=null?' of '+f(tg):'')+'</b></div>'+(tg?'<div class="bar"><i style="width:'+pct.toFixed(1)+'%"></i></div>':'')+
     '<div class="tiles"><div class="t"><span>Spots</span><b>'+(D.spots?f(D.spots):"–")+'</b></div><div class="t"><span>To go</span><b>'+esc(togo!=null?f(togo):(D.togo||"–"))+'</b></div><div class="t"><span>Moves/driver</span><b>'+esc(D.mpd||"–")+'</b></div>'+
     '<div class="t"><span>Cars/last hr</span><b>'+esc(D.last||"–")+'</b></div><div class="t"><span>Est. finish</span><b>'+esc(D.eta||"–")+'</b></div><div class="t"><span>Shift started</span><b>'+(D.started?tm(D.started):"–")+'</b></div></div>'+
-    '<div id="dsstale"></div></div>';
+    lastLog()+'<div id="dsstale"></div></div>';
+  h+=logCard();
   h+='<div class="card"><div class="hh"><h2>Pace</h2><small>cars parked per 15 min</small></div>'+paceSvg()+'</div>';
   var L=D.lots||[],i;
   L.forEach(function(l,i){var rows=l.rows||[],nf=rows.filter(function(r){return r.f===1;}).length,fl=-1;
