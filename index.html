@@ -422,7 +422,7 @@ body.padon #fab{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bottom,
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-204422";
+var APPV="2026-11-13-204655";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2600,11 +2600,18 @@ jobsRender();
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
   box.id="spad";box.innerHTML='<div id="spnum"></div><div id="spcol"></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
-  function on(){return !!(FOC&&fOn(cur)&&(tool===0||tool===1)&&!document.getElementById("ov").classList.contains("open"));}
+  function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
-  function cols(){var j=fJ(cur),m={},o=[];SP[cur].forEach(function(sp,k){if(bandOf[cur][k]===j)m[sp[1]]=1;});for(var c in m)o.push(+c);return o.sort(function(a,b){return a-b;});}
+  function isE(){return tool===2;}
+  function cols(){if(isE())return ecols();var j=fJ(cur),m={},o=[];SP[cur].forEach(function(sp,k){if(bandOf[cur][k]===j)m[sp[1]]=1;});for(var c in m)o.push(+c);return o.sort(function(a,b){return a-b;});}
+  function ecols(){var b=band(),S=LOTS[cur].segs,g=S?S[b.seg||0]:[0,NC[cur]-1],nc=NC[cur],rs=bandRows(),o=[];
+    for(var c=g[0];c<=g[1];c++){if(rs.some(function(r){return !labelCell[cur][r*nc+c];}))o.push(c);}return o;}
+  function editApply(L){var nc=NC[cur],ch=[];L.forEach(function(x){if(labelCell[cur][x[0]*nc+x[1]])return;ch.push(x);});if(!ch.length)return;
+    var eS={ed:edCopy(cur),marks:marksOf(cur)};pend={};ch.forEach(function(x){pend[x[0]+","+x[1]]=x[2];});
+    var mk=marksOf(cur);commitLayout();buildLot(cur,mk);pushUndo({k:"l",ed:eS.ed,marks:eS.marks});draw();counts();renderRows();save();lcache();pushLayout();}
   function bandRows(){var j=fJ(cur),m={},o=[];SP[cur].forEach(function(sp,k){if(bandOf[cur][k]===j&&!rowHid[cur][sp[0]])m[sp[0]]=1;});for(var r in m)o.push(+r);return o.sort(function(a,b){return a-b;});}
   function rowsAt(c){var nc=NC[cur],j=fJ(cur);return bandRows().map(function(r){var k=grid[cur][r*nc+c];return[r,(k>=0&&bandOf[cur][k]===j)?k:-1];});}
+  function cols0(){var j=fJ(cur),m={},o=[];SP[cur].forEach(function(sp,k){if(bandOf[cur][k]===j)m[sp[1]]=1;});for(var c in m)o.push(+c);return o.sort(function(a,b){return a-b;});}
   function spotNo(c){var L=LOTS[cur];if(L.cn&&L.cn[c]!=null)return L.cn[c];var cs=cols();return cs.indexOf(c)+1;}
   function firstOpen(cs){for(var q=0;q<cs.length;q++){if(rowsAt(cs[q]).some(function(x){return x[1]>=0&&sel[cur][x[1]]===0;}))return q;}return 0;}
   function setK(list,v){var snap0=marksOf(cur),ch=false;
@@ -2612,7 +2619,7 @@ jobsRender();
       sel[cur][k]=v;if(o===1)cnt[cur]--;if(v===1)cnt[cur]++;if(o===2)cap[cur]++;if(v===2)cap[cur]--;ch=true;
       var c=SP[cur][k][1];cell(cur,r,c);});
     if(ch){pushUndo({k:"m",m:snap0,a:marksOf(cur)});save();renderRows();counts();if(typeof fUI==="function")fUI();}}
-  function show(c){var z=zs[cur],b=band();if(!b)return;var rs=rowsAt(c).filter(function(x){return x[1]>=0;});if(!rs.length){hl.style.display="none";return;}
+  function show(c){var z=zs[cur],b=band();if(!b)return;var rs=isE()?rowsAt(c):rowsAt(c).filter(function(x){return x[1]>=0;});if(!rs.length){hl.style.display="none";return;}
     var x=xs[cur][c]*z,y=ys[cur][rs[0][0]]*z,w=LOTS[cur].cw[c]*z,h=ys[cur][rs[rs.length-1][0]+1]*z-y;
     hl.style.cssText="display:block;left:"+(x-3)+"px;top:"+(y-3)+"px;width:"+(w+6)+"px;height:"+(h+6)+"px";
     if(!PD.follow)return;PD.follow=false;var W=wrap.clientWidth,mx=Math.max(0,wrap.scrollWidth-W);PD.tgt=Math.max(0,Math.min(mx,x+w/2-W/2));if(!PD.anim)PD.anim=setInterval(glide,16);}
@@ -2621,18 +2628,21 @@ jobsRender();
   function render(){
     if(!on()){box.classList.remove("on");hl.style.display="none";document.body.classList.remove("padon");return;}
     var cs=cols();if(!cs.length){box.classList.remove("on");hl.style.display="none";return;}
-    var key=cur+"|"+fJ(cur);if(key!==PD.key){PD.key=key;PD.ci=firstOpen(cs);PD.ln={};PD.follow=true;var vv0=tool===1?2:1,nc0=NC[cur],j0=fJ(cur),ci0=Math.max(0,Math.min(cs.length-1,PD.ci));bandRows().forEach(function(r){
-        for(var d=0;d<cs.length;d++){var hit=false;[ci0+d,ci0-d].forEach(function(q){if(hit||q<0||q>=cs.length)return;var k=grid[cur][r*nc0+cs[q]];if(k>=0&&bandOf[cur][k]===j0){hit=true;if(sel[cur][k]===vv0)PD.ln[r]=1;}});if(hit)break;}});}
+    var key=cur+"|"+fJ(cur)+"|"+(isE()?"e":"m");if(key!==PD.key){PD.key=key;PD.ci=isE()?Math.max(0,cs.indexOf(cols0()[0])):firstOpen(cs);PD.ln={};PD.follow=true;var vv0=tool===1?2:1,nc0=NC[cur],j0=fJ(cur),ci0=Math.max(0,Math.min(cs.length-1,PD.ci));bandRows().forEach(function(r){
+        for(var d=0;d<cs.length;d++){var hit=false;[ci0+d,ci0-d].forEach(function(q){if(hit||q<0||q>=cs.length)return;var k=grid[cur][r*nc0+cs[q]];if(k>=0&&bandOf[cur][k]===j0){hit=true;if(isE()||sel[cur][k]===vv0)PD.ln[r]=1;}});if(hit)break;}});}
     PD.ci=Math.max(0,Math.min(cs.length-1,PD.ci));var c=cs[PD.ci],rs=rowsAt(c);
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
     box.style.setProperty("--sz",sz+"px");
     document.getElementById("spnum").innerHTML="<b>"+esc(String(spotNo(c)))+"</b><small>"+(PD.ci+1)+" of "+cs.length+"</small>";
-    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"></button>';});
+    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:(isE()?0:sel[cur][x[1]]),on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"></button>';});
     var col=document.getElementById("spcol");col.innerHTML=h;
     col.querySelectorAll(".spb").forEach(function(b){b.onclick=function(){var x=rs[+b.getAttribute("data-q")];if(!x)return;var r=x[0];if(PD.ln[r])delete PD.ln[r];else PD.ln[r]=1;
+      if(isE()){var cc=cols()[PD.ci];if(PD.ln[r]&&x[1]<0)editApply([[r,cc,1]]);else if(!PD.ln[r]&&x[1]>=0)editApply([[r,cc,0]]);render();return;}
       if(x[1]>=0){var vv=tool===1?2:1,o=sel[cur][x[1]];if(PD.ln[r]&&o===0)setLanes([x],[],vv);else if(!PD.ln[r]&&o===vv)setLanes([],[x],vv);}render();};});
     box.classList.add("on");document.body.classList.add("padon");show(c);}
-  function fillHere(){var cs=cols(),c=cs[PD.ci];if(c==null)return;var v=tool===1?2:1,rs=rowsAt(c),F=[],E=[];
+  function fillHere(){var cs=cols(),c=cs[PD.ci];if(c==null)return;
+    if(isE()){var L=[];rowsAt(c).forEach(function(x){if(PD.ln[x[0]]&&x[1]<0)L.push([x[0],c,1]);else if(!PD.ln[x[0]]&&x[1]>=0)L.push([x[0],c,0]);});if(L.length)editApply(L);return;}
+    var v=tool===1?2:1,rs=rowsAt(c),F=[],E=[];
     rs.forEach(function(x){if(x[1]<0)return;var o=sel[cur][x[1]];if(PD.ln[x[0]]){if(o===0)F.push(x);}else if(o===v)E.push(x);});
     if(F.length||E.length)setLanes(F,E,v);}
   function setLanes(F,E,v){var snap0=marksOf(cur),ch=false;
