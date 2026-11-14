@@ -413,6 +413,16 @@ body.pv #spx button{font-weight:700!important}
 #spx button[data-p="tlb"]{background:#fffbeb!important;color:#92400e!important;border-color:#fde68a!important}
 body.pv #spsc #scmode{background:#f0fdf4!important;border-color:#bbf7d0!important}body.pv #spsc #scmode.m1{background:#fef2f2!important;border-color:#fecaca!important}body.pv #spsc #scmode.m2{background:#fffbeb!important;border-color:#fde68a!important}
 body.pv #spsc #scfoc{background:#eff6ff!important;border-color:#bfdbfe!important}
+/* ---- header option C: soft green ---- */
+.top{background:#dcefd6!important;color:#1f4d1a!important;border-bottom:1px solid #c3dfba;border-radius:0 0 18px 18px;box-shadow:0 2px 8px rgba(31,77,26,.08)}
+.top .tstat .kp,.top .tstat #etab{background:#fff!important;border:0!important;box-shadow:0 1px 3px rgba(31,77,26,.12);border-radius:10px!important;color:#1f4d1a!important}
+.top .tstat .kp b,.top .tstat #etab b{color:#1f4d1a!important}.top .tstat .kp small,.top .tstat #etab small{color:#4f6b47!important;opacity:1!important}
+.top .tstat #etab.done{background:#2f7d32!important;color:#fff!important}.top .tstat #etab.done b,.top .tstat #etab.done small{color:#fff!important}
+.top .tbtn button{background:#fff!important;color:#1f4d1a!important;border:1px solid #b5d3ab!important;border-radius:12px!important;font-weight:700}
+.top .tbtn #logb{background:#2f7d32!important;color:#fff!important;border-color:#2f7d32!important;font-weight:800}
+.top .tbtn #logb.flash{background:#1f5fbf!important;border-color:#1f5fbf!important}
+.top .tbtn #pzb.on{background:#f59e0b!important;border-color:#f59e0b!important;color:#1b1f24!important}
+.top .tbtn button.due{background:#f59e0b!important;border-color:#f59e0b!important;color:#1b1f24!important}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -526,7 +536,7 @@ body.pv #spsc #scfoc{background:#eff6ff!important;border-color:#bfdbfe!important
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-215731";
+var APPV="2026-11-13-220011";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
