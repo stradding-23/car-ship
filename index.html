@@ -414,7 +414,7 @@ body.padon #brushf{right:12px}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-201621";
+var APPV="2026-11-13-201834";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2625,10 +2625,10 @@ jobsRender();
     F.forEach(function(x){one(x,v);});E.forEach(function(x){one(x,0);});
     if(ch){pushUndo({k:"m",m:snap0,a:marksOf(cur)});save();renderRows();counts();if(typeof fUI==="function")fUI();}}
   function move(d){var cs=cols(),n=Math.max(0,Math.min(cs.length-1,PD.ci+d));if(n===PD.ci)return;PD.ci=n;fillHere();render();try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
-  var ball=document.getElementById("spball"),sx=null,cx0=0,acc=0,moved=false,raf2=0,lt=0,DZ=14;
+  var ball=document.getElementById("spball"),sx=null,cx0=0,acc=0,moved=false,raf2=0,lt=0,DZ=32;
   function loop(){if(sx===null){clearInterval(raf2);raf2=0;return;}var t=Date.now(),dx=cx0-sx,ad=Math.abs(dx),dt=lt?(t-lt)/1000:0;lt=t;
-    ball.style.transform="translateX("+Math.max(-70,Math.min(70,dx))+"px)";
-    if(ad>DZ){var rate=Math.min(28,1.5+(ad-DZ)/7);acc+=rate*dt;if(!moved){acc=1;}while(acc>=1){acc-=1;move(dx>0?1:-1);moved=true;}}else acc=0;
+    ball.style.transform="translateX("+Math.max(-100,Math.min(100,dx*0.8))+"px)";
+    if(ad>DZ){var rate=Math.min(20,1+Math.pow((ad-DZ)/14,1.5));if(!moved&&acc===0)acc=0.6;acc+=rate*dt;while(acc>=1){acc-=1;move(dx>0?1:-1);moved=true;}}else acc=0;
   }
   ball.addEventListener("pointerdown",function(e){e.preventDefault();try{ball.setPointerCapture(e.pointerId);}catch(x){}sx=e.clientX;cx0=e.clientX;acc=0;moved=false;lt=0;ball.classList.add("dn");if(!raf2)raf2=setInterval(loop,30);});
   ball.addEventListener("pointermove",function(e){if(sx===null)return;e.preventDefault();cx0=e.clientX;});
