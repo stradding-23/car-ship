@@ -391,6 +391,14 @@ body.pv .fbar.on{padding:4px!important}body.pv .fbar #fprev,body.pv .fbar #fnext
 body.pv #spmid{justify-content:space-between;align-items:center;width:100%;align-self:stretch}
 body.pv #spx,body.pv #spsc{gap:8px}
 body.pv #spx button,body.pv #spsc button{width:104px!important;min-width:104px!important;height:46px;min-height:46px!important;padding:0 4px!important;font-size:14px!important;border-radius:12px!important}
+body.pv #spad.on{gap:6px!important;padding:4px 12px 10px!important}
+body.pv #spgrip{height:16px;margin:-2px -8px -4px}
+body.pv #spnum{grid-template-columns:auto 1fr auto!important;align-items:center!important;column-gap:8px;row-gap:0!important}
+body.pv #spnum .spl{grid-row:1;grid-column:1}body.pv #spnum .spn{grid-row:1;grid-column:2}body.pv #spnum .spr{grid-row:1;grid-column:3;font-size:12px}body.pv #spnum .spr2{display:none}
+body.pv #spnum .pb{margin-top:4px!important;height:5px}
+body.pv #spx,body.pv #spsc{gap:6px!important}
+body.pv #spx button,body.pv #spsc button{height:40px!important;min-height:40px!important}
+body.pv #spball{height:46px!important}body.pv #spball .knob{width:40px!important;height:40px!important}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -504,7 +512,7 @@ body.pv #spx button,body.pv #spsc button{width:104px!important;min-width:104px!i
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-214857";
+var APPV="2026-11-13-215043";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2734,10 +2742,10 @@ jobsRender();
         for(var d=0;d<cs.length;d++){var hit=false;[ci0+d,ci0-d].forEach(function(q){if(hit||q<0||q>=cs.length)return;var k=grid[cur][r*nc0+cs[q]];if(k>=0&&bandOf[cur][k]===j0){hit=true;if(sel[cur][k]===vv0)PD.ln[r]=1;}});if(hit)break;}});}}
     PD.ci=Math.max(0,Math.min(cs.length-1,PD.ci));var c=cs[PD.ci],rs=rowsAt(c);
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
-    var pvw=pvOK();setPv(pvw);if(pvw){var zb=document.getElementById("pvz").getBoundingClientRect().bottom;var av2=innerHeight-zb-14-172;sz=Math.max(24,Math.min(56,Math.floor(av2/n)-7));}
+    var pvw=pvOK();setPv(pvw);if(pvw){var zb=document.getElementById("pvz").getBoundingClientRect().bottom;var av2=innerHeight-zb-14-128;sz=Math.max(24,Math.min(40,Math.floor(av2/n)-7));}
     box.style.setProperty("--sz",sz+"px");
     var st=fStats(cur,fJ(cur)),pct=isE()?0:(st.cap?Math.round(st.c/st.cap*100):0);
-    document.getElementById("spnum").innerHTML='<div class="spl">'+(isE()?"Edit spot":"Spot")+'</div><div class="spr">'+(isE()?esc(String(band().n))+" spots":st.c.toLocaleString()+" / "+st.cap.toLocaleString())+'</div><div class="spn"><b>'+esc(String(isE()?PD.ci+1:spotNo(c)))+'</b><small>of '+cs.length+'</small></div><div class="spr2">'+(isE()?"":st.open.toLocaleString()+" open")+'</div>'+(isE()?"":'<div class="pb"><i style="width:'+pct+'%"></i></div>');
+    document.getElementById("spnum").innerHTML='<div class="spl">'+(isE()?"Edit spot":"Spot")+'</div><div class="spr">'+(isE()?esc(String(band().n))+" spots":st.c.toLocaleString()+" / "+st.cap.toLocaleString()+(pvOK()?' · <span style="color:#2563eb">'+st.open.toLocaleString()+" open</span>":""))+'</div><div class="spn"><b>'+esc(String(isE()?PD.ci+1:spotNo(c)))+'</b><small>of '+cs.length+'</small></div><div class="spr2">'+(isE()?"":st.open.toLocaleString()+" open")+'</div>'+(isE()?"":'<div class="pb"><i style="width:'+pct+'%"></i></div>');
     var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:(isE()?0:sel[cur][x[1]]),em=isE()?PD.eln[x[0]]:undefined,on=isE()?em===1:!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(em===0?" rem":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"></button>';});
     var col=document.getElementById("spcol");col.innerHTML=h;
     col.querySelectorAll(".spb").forEach(function(b){b.onclick=function(){var x=rs[+b.getAttribute("data-q")];if(!x)return;var r=x[0];if(PD.ln[r])delete PD.ln[r];else PD.ln[r]=1;
