@@ -1,4 +1,24 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* ---- Shift & pace: full-screen sheet styled like the Supercargo cards ---- */
+#pacep.open{position:fixed!important;left:0;right:0;top:0;bottom:0;z-index:48;max-height:none!important;margin:0;border:0;background:#eef2f7;padding:0 12px calc(30px + env(safe-area-inset-bottom,0px));overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#pacep .pchd{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;margin:0 -12px 10px;padding:max(10px,env(safe-area-inset-top)) 14px 10px;background:#1d4ed8;color:#fff;font-size:18px}
+#pacep .pchd button{min-height:40px;padding:6px 18px;border:0;border-radius:999px;background:#fff;color:#1d4ed8;font:inherit;font-size:15px;font-weight:800}
+#pacep #shst{margin:0 2px 8px!important}
+#pacep #prow,#pacep #jctx,#pacep #pdet,#pacep #jobsec:not(:empty),#pacep #plog{background:var(--card);border:1px solid #d6dee8;border-radius:14px;padding:12px;margin:0 0 12px;box-shadow:0 1px 3px rgba(15,23,42,.08);box-sizing:border-box;width:100%}
+#pacep #prow{display:grid!important;grid-template-columns:auto 1fr auto 1fr;gap:8px 8px!important;overflow:visible!important;align-items:center}
+#pacep #prow label{margin:0;font-weight:700;color:#334155}
+#pacep #prow input{width:100%!important;min-width:0;box-sizing:border-box;font-size:20px;font-weight:700;text-align:center;border:1px solid #c3cfdd;border-radius:10px}
+#pacep #prow button{grid-column:span 2;min-height:46px;border:0;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-weight:800;font-size:16px}
+#pacep #prow #pstart,#pacep #prow #pfin{background:#1d4ed8;color:#fff}
+#pacep #prow #yreset{background:#fee2e2;color:#b91c1c}
+#pacep .tlh b,#pacep .dsum{color:#1d4ed8;font-size:16px;font-weight:800}
+#pacep #jctx label{font-weight:700;color:#334155}
+#pacep #jctx button{border:0;border-radius:12px;background:#dbeafe;color:#1d4ed8;font-weight:800;min-height:42px;padding:6px 14px}
+#pacep #plog{display:table;border-collapse:separate}
+#pacep #plog:empty{display:none}
+@media (prefers-color-scheme:dark){#pacep.open{background:#10161c}#pacep #prow,#pacep #jctx,#pacep #pdet,#pacep #jobsec:not(:empty),#pacep #plog{border-color:#2a3541}
+  #pacep #prow button,#pacep #jctx button{background:#1e3a5f;color:#93c5fd}#pacep #prow label,#pacep #jctx label{color:#cbd5e1}#pacep .tlh b,#pacep .dsum{color:#93c5fd}}
+</style></head><body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -543,6 +563,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
   <table class="plog" id="tltab"></table>
 </div>
 <div class="rowsp" id="pacep">
+  <div class="pchd"><b>Shift &amp; pace</b><button id="pclose" type="button">Done</button></div>
   <div class="pnote" id="shst" style="margin:0 0 6px"></div>
   <div id="prow" class="prow" style="display:flex;flex-wrap:nowrap;align-items:center;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px">
     <label for="ptarget" style="white-space:nowrap">Cars</label><input id="ptarget" type="number" inputmode="numeric" min="0" style="width:78px;flex:0 0 auto" aria-label="Cars expected this shift">
@@ -585,7 +606,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-081939";
+var APPV="2026-11-14-082512";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1335,6 +1356,7 @@ document.getElementById("logb").onclick=function(){
   setTimeout(function(){b.classList.remove("flash");paceUpdate();},1500);};
 document.getElementById("etab").onclick=function(){document.getElementById("paceb").click();};
 document.getElementById("rateb").onclick=function(){document.getElementById("paceb").click();};
+document.getElementById("pclose").onclick=function(e){e.stopPropagation();document.getElementById("paceb").click();};
 document.getElementById("paceb").onclick=function(){
   var p=document.getElementById("pacep"),o=p.classList.toggle("open");
   if(o)document.getElementById("rowsp").classList.remove("open"),document.getElementById("rowsb").classList.remove("act");
