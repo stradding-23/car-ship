@@ -346,7 +346,7 @@ body.pv #pv{display:block}body.pv #wrap{display:none!important}body.pv .hint{dis
 #pvzc{display:flex;gap:4px;align-items:stretch}
 #pvzc button{flex:1 1 0;min-width:0;min-height:0!important;margin:0;display:flex;flex-direction:column;gap:3px;align-items:stretch;border-radius:8px;padding:3px 2px;border:0;background:transparent;transition:box-shadow .15s}
 #pvzc button.cur{box-shadow:0 0 0 3px #ef4444,0 0 12px rgba(239,68,68,.35)}
-#pvzc .zn{font-size:10px;font-weight:700;text-align:center;color:var(--mut)}
+#pvzc .zn{font-size:13px;font-weight:800;text-align:center;color:var(--ink);min-height:16px;line-height:16px}
 #pvzc .zc{height:22px;border-radius:4px;border:1px solid #dcc98a;background:#fcefc2;box-sizing:border-box}
 #pvzc .zc.car{background:#3b7cf4;border-color:#1d4ed8}#pvzc .zc.blk{background:#bfc6ce;border-color:#aab2bb}#pvzc .zc.none{background:transparent;border:1px dashed #cbbd86}
 body.pv #spad{left:10px;right:10px;transform:none;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
@@ -500,7 +500,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-213029";
+var APPV="2026-11-13-213140";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2739,7 +2739,7 @@ jobsRender();
     var a=Math.max(0,Math.min(cs.length-11,PD.ci-5)),e=Math.min(cs.length-1,a+10),z=document.getElementById("pvzc"),hz="";
     document.getElementById("pvzr").textContent="spots "+(a+1)+"–"+(e+1);
     for(var q=a;q<=e;q++){var cc=cs[q],cells="";rowsAt(cc).forEach(function(x){var v=x[1]<0?-1:sel[cur][x[1]];cells+='<span class="zc'+(v<0?" none":v===1?" car":v===2?" blk":"")+'"></span>';});
-      hz+='<button data-q="'+q+'" class="'+(q===PD.ci?"cur":"")+'" aria-label="Spot '+(q+1)+'"><span class="zn">'+(q+1)+'</span>'+cells+'</button>';}
+      var sn=q+1,lab=(sn===1||sn%5===0||q===cs.length-1)?String(sn):"";hz+='<button data-q="'+q+'" class="'+(q===PD.ci?"cur":"")+'" aria-label="Spot '+sn+'"><span class="zn">'+lab+'</span>'+cells+'</button>';}
     z.innerHTML=hz;z.querySelectorAll("button").forEach(function(x){x.onclick=function(){jump(+x.getAttribute("data-q"));};});}
   (function(){var d=document.getElementById("pvz");try{if(localStorage.getItem("blair_pvz_closed")==="1")d.open=false;}catch(e){}
     d.addEventListener("toggle",function(){try{localStorage.setItem("blair_pvz_closed",d.open?"0":"1");}catch(e){}setTimeout(function(){try{render();}catch(x){}},0);});})();
