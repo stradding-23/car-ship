@@ -416,13 +416,13 @@ body.padon #fab{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bottom,
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
-<div id="fab"><div id="fmodes"><button data-t="0">Cars</button><button data-t="1">X out</button><button data-t="2">Edit</button></div><button id="brushf" aria-label="Brush size">Brush 1</button></div>
+<div id="fab"><div id="fmodes"><button data-t="0">Cars</button><button data-t="1">X out</button><button data-t="2">Edit</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
 <div id="gate" class="open"><div class="gc"><h2>Blair / P7 / EB1 Car Ship</h2><p>Enter the password to open the counter.</p><input id="gpw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password" enterkeyhint="go"><div class="er" id="ger"></div><button id="gopen">Open counter</button><div class="or">No password?</div><button class="alt" id="gview">Supercargo view</button></div></div>
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-203627";
+var APPV="2026-11-13-203815";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
