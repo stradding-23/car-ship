@@ -18,6 +18,31 @@
 #pacep #plog:empty{display:none}
 @media (prefers-color-scheme:dark){#pacep.open{background:#10161c}#pacep #prow,#pacep #jctx,#pacep #pdet,#pacep #jobsec:not(:empty),#pacep #plog{border-color:#2a3541}
   #pacep #prow button,#pacep #jctx button{background:#1e3a5f;color:#93c5fd}#pacep #prow label,#pacep #jctx label{color:#cbd5e1}#pacep .tlh b,#pacep .dsum{color:#93c5fd}}
+
+/* ---- Timed log: card styling ---- */
+#tlogp.open{background:#eef2f7;padding:0 12px calc(24px + env(safe-area-inset-bottom,0px))!important}
+#tlogp .tlh{position:sticky;top:0;z-index:2;margin:0 -12px 12px;padding:max(10px,env(safe-area-inset-top)) 14px 10px;background:#1d4ed8;color:#fff;display:flex;align-items:center;justify-content:space-between}
+#tlogp .tlht{display:flex;flex-direction:column;gap:1px}#tlogp .tlht b{font-size:18px}#tlogp #tlnext{color:#dbeafe;font-size:13px}
+#tlogp #tldone{min-height:40px;padding:6px 18px;border:0;border-radius:999px;background:#fff;color:#1d4ed8;font:inherit;font-size:15px;font-weight:800}
+#tlogp #lunchbox:has(#lunchb:empty){display:none}
+.tlcard{background:var(--card);border:1px solid #d6dee8;border-radius:14px;padding:12px;margin:0 0 12px;box-shadow:0 1px 3px rgba(15,23,42,.08)}
+.tlct{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:800;color:#1d4ed8;margin:0 0 10px}
+#tltimes{display:flex;flex-wrap:wrap;gap:8px}
+#tltimes .chip{margin:0!important;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 8px 6px 14px;border:0;border-radius:999px;background:#dbeafe;color:#1d4ed8;font:inherit;font-size:16px;font-weight:800}
+#tltimes .chip small{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#fff;color:#1d4ed8;font-size:16px}
+.tladdr{margin:12px 0 0!important;flex-wrap:nowrap!important}
+#tlogp .tladdr input[type=time]{flex:1;min-height:46px;font-size:18px;border-radius:12px;border:1px solid #c3cfdd}
+#tladd{min-height:46px;padding:6px 18px;border:0;border-radius:12px;background:#1d4ed8;color:#fff;font:inherit;font-size:16px;font-weight:800;white-space:nowrap}
+#tlogp .tlct select{min-height:38px!important;font-size:14px!important;border-radius:10px!important;font-weight:600;color:var(--ink)}
+#tltab{width:100%;border-collapse:collapse}
+#tltab th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;text-align:left;padding:4px 6px;border-bottom:1px solid #e2e8f0}
+#tltab td{padding:10px 6px;border-bottom:1px solid #eef2f7;font-size:16px;vertical-align:middle}
+#tltab tr:last-child td{border-bottom:0}
+#tltab td b{font-size:17px}
+#tltab button{min-height:36px;padding:4px 12px;border:0;border-radius:10px;background:#dbeafe;color:#1d4ed8;font:inherit;font-size:14px;font-weight:800}
+#tltab button[data-x]{background:#f1f5f9;color:#64748b;min-width:36px}
+#tltab tr.wk td{padding-top:0;font-size:13px;color:#64748b}
+@media (prefers-color-scheme:dark){#tlogp.open{background:#10161c}.tlcard{border-color:#2a3541}#tltimes .chip,#tltab button{background:#1e3a5f;color:#93c5fd}.tlct{color:#93c5fd}#tltab th,#tltab td{border-color:#2a3541}}
 </style></head><body>
 <!DOCTYPE html>
 <html lang="en">
@@ -555,12 +580,13 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="editbar" id="xpbar"></div>
 <div class="rowsp" id="rowsp"></div>
 <div class="rowsp" id="tlogp">
-  <div class="tlh"><b>Timed log</b><span id="tlnext" class="pnote"></span><button id="tldone" type="button">Done</button></div>
+  <div class="tlh"><div class="tlht"><b>Timed log</b><span id="tlnext" class="pnote"></span></div><button id="tldone" type="button">Done</button></div>
   <div id="lunchbox" style="margin:8px 0 10px"><button id="lunchb" type="button"></button><div id="lunchn" class="pnote" style="margin-top:4px"></div></div>
-  <div id="tltimes" style="margin:4px 0"></div>
-  <div class="tlrow"><input id="tlnew" type="time" step="60"><button id="tladd">Add time</button></div>
-  <div class="tlrow"><label for="tldate" class="pnote">Show log for</label><select id="tldate"></select></div>
-  <table class="plog" id="tltab"></table>
+  <div class="tlcard"><div class="tlct">Log times</div>
+    <div id="tltimes"></div>
+    <div class="tlrow tladdr"><input id="tlnew" type="time" step="60" aria-label="New log time"><button id="tladd">Add time</button></div></div>
+  <div class="tlcard"><div class="tlct">Log<select id="tldate" aria-label="Show log for"></select></div>
+    <table class="plog" id="tltab"></table></div>
 </div>
 <div class="rowsp" id="pacep">
   <div class="pchd"><b>Shift &amp; pace</b><button id="pclose" type="button">Done</button></div>
@@ -606,7 +632,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-082846";
+var APPV="2026-11-14-083055";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
