@@ -111,6 +111,7 @@ button{min-height:40px;touch-action:manipulation}
 .xtr i{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#ef4444 0 5px,#fca5a5 5px 10px);display:none}.xtr .xa{left:0}.xtr .xz{right:0}.xbar[data-e="a"] .xa,.xbar[data-e="z"] .xz{display:block}
 .xmini{flex:1;display:grid;gap:1px}.xmini .mc{background:#dde3ea;border-radius:1px}.xmini .mc.car{background:#1d4ed8}.xmini .mc.blk{background:#9aa3ad}.xmini .mc.none{background:transparent}
 .xbar[data-e="a"] .xmini .mc.pa,.xbar[data-e="z"] .xmini .mc.pz{background:repeating-linear-gradient(45deg,#ef4444 0 3px,#fca5a5 3px 6px)}
+.dkg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.dkb{min-height:60px;font:inherit;font-size:24px;font-weight:800;border:0;border-radius:14px;background:#dbeafe;color:#1d4ed8}
 .xends{display:flex;gap:10px}.xend{flex:1;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;line-height:1.2;text-align:center}.xend b{font-size:18px}.xar{font-size:26px;line-height:1}
 #capx{white-space:nowrap;margin-left:8px;font:inherit;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#1d4ed8;min-height:28px;vertical-align:middle}#capbar.ok{background:#1f7a3a;color:#fff}#capbar.low{background:#fff2cc;color:#5a4300}
 #captoast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:60;background:#1f7a3a;color:#fff;padding:14px 18px;border-radius:12px;font-size:17px;font-weight:700;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:86vw}#captoast.on{display:block}
@@ -634,7 +635,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-083533";
+var APPV="2026-11-14-083812";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1406,7 +1407,7 @@ function workDiff(a,b){
   return out.map(function(o){var ps=o[2].slice(0,4).map(function(p){return esc(p[0])+" +"+p[1];}).join(", ");
     if(o[2].length>4)ps+=", +"+(o[2].length-4)+" more";return "<b>"+esc(LN(o[0]))+":</b> "+(o[2].length>1?"Rows ":"Row ")+ps;}).join("<br>");
 }
-document.getElementById("pstart").onclick=function(){var n=Date.now();P.start=n;P.log=[{t:n,n:TOT,w:workSnap()}];P.pauses=[];P.conds=[];Object.keys(P.pre||{}).forEach(function(id){if(P.pre[id]&&CF[id])P.conds.push({c:id,s:n});});P.pre={};CLC=null;psave();plogRender();paceUpdate();};
+document.getElementById("pstart").onclick=function(){var n=Date.now();P.start=n;P.log=[{t:n,n:TOT,w:workSnap()}];P.pauses=[];P.conds=[];Object.keys(P.pre||{}).forEach(function(id){if(P.pre[id]&&CF[id]){var q0={c:id,s:n};if(CF[id].pd&&P.pre[id]>1)q0.d=+P.pre[id];else if(CF[id].pd)q0.d=1;P.conds.push(q0);}});P.pre={};CLC=null;psave();plogRender();paceUpdate();};
 document.getElementById("plogb").onclick=function(){P.log.push({t:Date.now(),n:TOT,w:workSnap()});psave();plogRender();paceUpdate();};
 document.getElementById("lunchb").onclick=lunchGo;lunchUI();document.getElementById("pzb").onclick=pzToggle;document.getElementById("pzb2").onclick=pzToggle;
 document.getElementById("pnew").onclick=function(){ask("Start a new shift? This clears the log and target. Cars on the lot map are not changed.","New shift",doNew);};
@@ -1788,7 +1789,7 @@ function shStart(db){
     function(e){TL.times=Array.isArray(e.times)?e.times.slice():[];tlLocal();shTlUI();return true;},500);
   SH.fl=new Unit("fl",db.doc("shared/fulls"),function(){return{f:shClone(FT||{})};},function(e){FT=shClone(e.f||{});ftLocal();return true;},700);
   SH.cfg=new Unit("cfg",db.doc("shared/settings"),function(){return{conds:shClone(CF||{})};},
-    function(e){CF=(e&&e.conds&&typeof e.conds==="object"&&Object.keys(e.conds).length)?shClone(e.conds):JSON.parse(JSON.stringify(CF_DEF));cfLocal();CLC=null;ctxRender();plogRender();paceUpdate();return true;},700);
+    function(e){CF=(e&&e.conds&&typeof e.conds==="object"&&Object.keys(e.conds).length)?shClone(e.conds):JSON.parse(JSON.stringify(CF_DEF));cfLocal();if(cfMig()){cfLocal();setTimeout(function(){try{cfSave();}catch(x){}},500);}CLC=null;ctxRender();plogRender();paceUpdate();return true;},700);
   SH.hr=new Unit("hr",db.doc("shared/rows"),shRowsGet,shRowsApply,500);
   Object.keys(TL.logs).forEach(function(d){if(shDayOk(d))shDayUnit(d);});
   shListen();shStatus();
@@ -1955,9 +1956,14 @@ if(FOC){var fi0=lotIdx(FOC.lot);if(fi0>=0){cur=fi0;fAll();setTimeout(function(){
    divided by the coefficient to get "normal-pace" hours, so the base rate isn't dragged down twice; the remaining
    time is then multiplied by the coefficients that are on right now. */
 var CFK="blair_cfg_v1",CF=null;
-var CF_DEF={upper:{n:"Walking to upper decks",k:1.15,o:1},ramp:{n:"One-way ramp traffic",k:1.15,o:2},snow:{n:"Snow or ice",k:1.35,o:3},rain:{n:"Heavy rain or dark",k:1.1,o:4},train:{n:"Train blocking the road",k:1.2,o:5}};
+var CF_DEF={upper:{n:"Walking to upper decks",k:1.05,o:1,pd:1},ramp:{n:"One-way ramp traffic",k:1.15,o:2},snow:{n:"Snow or ice",k:1.35,o:3},rain:{n:"Heavy rain or dark",k:1.1,o:4},newdrv:{n:"Lots of new drivers",k:1.2,o:5}};
 try{CF=JSON.parse(localStorage.getItem(CFK)||"null");}catch(e){}
 if(!CF||typeof CF!=="object"||!Object.keys(CF).length)CF=JSON.parse(JSON.stringify(CF_DEF));
+function cfMig(){var ch=false;if(!CF)return false;
+  if(CF.train&&/train/i.test(CF.train.n||"")){var o=CF.train.o||5;delete CF.train;if(!CF.newdrv)CF.newdrv={n:"Lots of new drivers",k:1.2,o:o};ch=true;}
+  if(CF.upper&&!CF.upper.pd){if(Math.abs((CF.upper.k||0)-1.15)<0.001)CF.upper.k=1.05;CF.upper.pd=1;ch=true;}
+  return ch;}
+if(cfMig())cfLocal();
 if(!Array.isArray(P.conds))P.conds=[];
 function cfLocal(){try{localStorage.setItem(CFK,JSON.stringify(CF));}catch(e){}}
 function cfSave(){cfLocal();if(SH&&SH.cfg&&!SH.off)SH.cfg.local();}
@@ -1967,7 +1973,9 @@ function adjLevel(t){var a=0;(P.conds||[]).forEach(function(q){var p=adjPct(q.c)
 function adjTxt(a){return a===0?"Normal pace":Math.abs(a)+"% "+(a>0?"slower":"faster");}
 function cK(id){var d=CF&&CF[id];return d&&d.k>=1?d.k:1;}
 function condOn(id,t){return(P.conds||[]).some(function(q){return q.c===id&&q.s<=t&&(q.e==null||t<q.e);});}
-function condK(t){var k=1+adjLevel(t)/100;cfIds().forEach(function(id){if(condOn(id,t))k*=condKFor(id);});return k;}
+function condDecks(id,t){var d=0;(P.conds||[]).forEach(function(q){if(q.c===id&&q.s<=t&&(q.e==null||t<q.e))d=q.d||0;});return d;}
+function condKd(id,d){var k=condKFor(id);return (CF[id]&&CF[id].pd&&d>0)?1+(k-1)*d:k;}
+function condK(t){var k=1+adjLevel(t)/100;cfIds().forEach(function(id){if(condOn(id,t))k*=condKd(id,condDecks(id,t));});return k;}
 /* learning: each gap between two logged counts is a segment; its pace is compared with the same job's normal-pace segments */
 var CLC=null;
 function segsOf(L){var out=[],ids=cfIds(),now=Date.now();
@@ -1988,14 +1996,21 @@ function condLearn(){var now=Date.now(),key=Object.keys(JOBS||{}).length+"|"+(P.
   var r={};ids.forEach(function(i){var p=cK(i),a=acc[i],ob=a.w>0?a.s/a.w:null;r[i]={prior:p,hrs:+a.w.toFixed(2),obs:ob,k:ob==null?p:(p*3+ob*a.w)/(3+a.w)};});
   CLC={key:key,t:now,r:r};return r;}
 function condKFor(id){var r=condLearn()[id];return r?r.k:cK(id);}
-function condEffTxt(id){var r=condLearn()[id];if(!r)return "";var p=Math.round((r.k-1)*100);
+function condEffTxt(id){var r=condLearn()[id];if(!r)return "";var p=Math.round((r.k-1)*100);if(CF[id]&&CF[id].pd){var dd=P.start?condDecks(id,Date.now()):(+((P.pre||{})[id])||0);return "about "+p+"% slower per deck"+(dd?" \u00b7 "+dd+" deck"+(dd>1?"s":"")+" now, about "+Math.round(p*dd)+"% slower":"")+(r.hrs>=0.15?" (learned)":" (a guess, no data yet)");}
   return r.hrs>=0.15?("about "+p+"% slower, learned from "+r.hrs.toFixed(1)+" h of your counts"):("about "+p+"% slower (a guess, no data yet)");}
 function cdSheet(){var sh=ov("");function draw(){var now=Date.now(),ids=cfIds(),on=function(id){return P.start?condOn(id,now):!!(P.pre&&P.pre[id]);};
     sh.innerHTML="<h3>Slowdowns</h3><div class='nt'>"+(P.start?"Tap when it starts and again when it ends.":"Counts as expected until you start the shift.")+"</div>"+
     ids.map(function(id){var o=on(id);return "<button class='cdrow' data-cd='"+esc(id)+"' aria-pressed='"+(o?"true":"false")+"' style='display:flex;width:100%;align-items:center;gap:10px;text-align:left;min-height:56px;margin:6px 0;padding:8px 12px;"+(o?"background:var(--bar);color:#fff;border-color:var(--bar)":"")+"'><span style='flex:1'><b>"+esc(CF[id].n)+"</b><br><small>"+condEffTxt(id)+"</small></span><b>"+(o?"ON":"off")+"</b></button>";}).join("")+
     "<div class='btns'><button id='cdedit'>Edit list</button><button id='cddone' class='pri'>Done</button></div>";
-    Array.prototype.forEach.call(sh.querySelectorAll(".cdrow"),function(b){b.onclick=function(){condBtn(b.getAttribute("data-cd"));draw();};});
+    Array.prototype.forEach.call(sh.querySelectorAll(".cdrow"),function(b){b.onclick=function(){var id=b.getAttribute("data-cd");if(CF[id]&&CF[id].pd&&!on(id)){decks(id);return;}condBtn(id);draw();};});
     sh.querySelector("#cddone").onclick=ovClose;sh.querySelector("#cdedit").onclick=function(){cfgDlg();};}
+  function decks(id){var h="<h3>"+esc(CF[id].n)+"</h3><div class='nt'>How many decks up are they walking?</div><div class='dkg'>";
+    for(var d=1;d<=8;d++)h+="<button class='dkb' data-d='"+d+"'>"+d+(d===8?"+":"")+"</button>";
+    sh.innerHTML=h+"</div><div class='btns'><button id='dkno'>Back</button></div>";
+    sh.querySelectorAll(".dkb").forEach(function(b){b.onclick=function(){var d=+b.dataset.d;
+      if(!P.start){P.pre=P.pre||{};P.pre[id]=d;psave();ctxRender();if(window.fcRender)fcRender();}
+      else{CLC=null;var now=Date.now();P.conds.push({c:id,s:now,d:d});psave();plogRender();paceUpdate();ctxRender();}draw();};});
+    sh.querySelector("#dkno").onclick=draw;}
   draw();}
 function condBtn(id){if(!P.start){P.pre=P.pre||{};P.pre[id]=P.pre[id]?0:1;psave();ctxRender();if(window.fcRender)fcRender();return;}CLC=null;condToggle(id);ctxRender();}
 function condActive(){var n=Date.now();return cfIds().filter(function(id){return condOn(id,n);});}
@@ -2377,7 +2392,7 @@ function fcRender(){var out=document.getElementById("fcout");if(!out)return;
   var cars=P.target>0?P.target:null,d=o.sum/o.tot,M=fcModel(),dv=P.drivers,C=fcCycle(d,M,dv),rd=60/C.cyc,h=[];
   if(!(cars>0))h.push("Enter the cars expected for the finish time.");
   else if(!(dv>0))h.push("Enter the number of drivers for the finish time.");
-  else{var hrs=cars/(rd*dv),pk=1,pn=[];Object.keys(P.pre||{}).forEach(function(id){if(P.pre[id]&&CF[id]){pk*=condKFor(id);pn.push(CF[id].n);}});hrs*=pk;h.push("<b>Projected finish about "+fmtT(Date.now()+hrs*3600000)+"</b> if started now ("+hrs.toFixed(1)+" h, "+dv+" drivers, "+cars.toLocaleString()+" cars"+(pn.length?", with "+pn.join(" and ").toLowerCase():"")+")");}
+  else{var hrs=cars/(rd*dv),pk=1,pn=[];Object.keys(P.pre||{}).forEach(function(id){if(P.pre[id]&&CF[id]){pk*=condKd(id,+P.pre[id]||0);pn.push(CF[id].n);}});hrs*=pk;h.push("<b>Projected finish about "+fmtT(Date.now()+hrs*3600000)+"</b> if started now ("+hrs.toFixed(1)+" h, "+dv+" drivers, "+cars.toLocaleString()+" cars"+(pn.length?", with "+pn.join(" and ").toLowerCase():"")+")");}
   var ls=Object.keys(o.lots).map(function(l){return l+" "+o.lots[l].toLocaleString();}).join(", ");
   h.push("Open spots: "+ls+". Avg haul "+(Math.round(d/10)*10).toLocaleString()+" ft, about "+rd.toFixed(1)+" cars per driver per hour. Each car: "+C.cyc.toFixed(1)+" min per driver ("+(Math.round(C.wait*60))+" s waiting for the van). Speed "+Math.round(M.v*60/5280)+" mph "+(M.fit?"(from your jobs)":"(assumed, no jobs to fit yet)")+".");
   if(cars>o.tot)h.push("Only "+o.tot.toLocaleString()+" open spots for "+cars.toLocaleString()+" cars.");
