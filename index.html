@@ -295,9 +295,10 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 #dash .rf{width:100%;margin:0 0 10px;background:var(--blue);color:#fff}
 #dash .bk{background:transparent;color:var(--blue);border:2px solid var(--blue);margin:8px 0 0;width:100%}
 #moreb{display:none}
+#brushf{display:none;position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));min-width:116px;min-height:58px;padding:6px 14px;border-radius:30px;z-index:45;border:2px solid #c9a227;background:#ffe08a;color:#3a2c00;font:800 18px/1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+@media (max-width:600px),(orientation:landscape) and (max-height:520px){#brushf{display:block}.tools #brush{display:none!important}}
 .zst{display:inline-flex;gap:5px;align-items:center}
 @media (max-width:600px){#rowsb,#walkb,#bossb,#dashb,#clr{display:none!important}
-  .tbtn #brush{flex-grow:1.6;font-size:15px!important;font-weight:800;background:#ffe08a;color:#3a2c00;border:2px solid #ffe08a}
   .zst{flex-direction:column;gap:2px}.zst button{min-height:24px!important;height:24px;width:44px;padding:0!important;font-size:18px;line-height:1}
   .tools{align-items:center}#moreb{display:inline-block!important;margin-left:auto}
   .tools{justify-content:flex-start}.tools .sp{display:none}
@@ -320,7 +321,6 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
  <div class="tbtn">
   <button id="lotnext">Lot X &rsaquo;</button>
   <button id="mode2">Cars</button>
-  <button id="brush">Brush 1</button>
   <button id="mode" class="act">Select</button>
   <button id="rowsb">Rows</button>
   <button id="fbtn">1 row</button>
@@ -338,6 +338,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 <div class="fbar" id="fbar"></div>
 <div class="tabs" id="tabs"></div>
 <div class="tools">
+  <button id="brush">Brush 1</button>
   <span class="zst" id="zst"><button id="zi">+</button><button id="zo">&minus;</button></span><button id="fit">Fit</button>
   <span class="sp"></span>
   <button id="walkb">Walk fill</button>
@@ -396,6 +397,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
+<button id="brushf" aria-label="Brush size">Brush 1</button>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
 <div id="gate" class="open"><div class="gc"><h2>Blair / P7 / EB1 Car Ship</h2><p>Enter the password to open the counter.</p><input id="gpw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password" enterkeyhint="go"><div class="er" id="ger"></div><button id="gopen">Open counter</button><div class="or">No password?</div><button class="alt" id="gview">Supercargo view</button></div></div>
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
@@ -1127,6 +1129,8 @@ function doNew(){
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function ov(html){var o=document.getElementById("ov"),sh=document.getElementById("sheet");sh.innerHTML=html;o.classList.add("open");return sh;}
 function ovClose(){document.getElementById("ov").classList.remove("open");}
+(function(){var o=document.getElementById("brush"),f=document.getElementById("brushf");function sy(){f.textContent=o.textContent;}
+  f.onclick=function(e){e.stopPropagation();o.click();sy();};try{new MutationObserver(sy).observe(o,{childList:true,characterData:true,subtree:true});}catch(e){}sy();})();
 document.getElementById("moreb").onclick=function(){
   var it=[["rowsb","Rows"],["dashb","Supercargo view"],["bossb","QR / share"],["walkb","Walk fill"],["clr","Clear shown"]];
   var h='<h3>More</h3><div class="moreg">'+it.map(function(x){var b=document.getElementById(x[0]);if(!b)return"";return'<button data-m="'+x[0]+'">'+esc(x[1]||b.textContent)+'</button>';}).join("")+'</div><div class="btns" style="margin-top:10px"><button id="morex">Close</button></div>';
