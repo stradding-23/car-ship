@@ -379,6 +379,9 @@ body.pv.padon #fab{right:10px;bottom:calc(132px + env(safe-area-inset-bottom,0px
 @media (min-width:0px){.tbtn #rowsb,.tools #dashb,.tools #bossb{display:inline-block!important}body.pv .tbtn #rowsb,body.pv .tools #dashb,body.pv .tools #bossb{display:none!important}}
 body.pv #spball{height:54px}body.pv #spball .knob{width:46px;height:46px}body.pv #spad.on{gap:8px;padding-top:8px}body.pv #spnum .spn b{font-size:24px}
 body.pv .tools{display:none!important}
+#tldone{display:none;margin-left:auto;min-height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);font:700 14px system-ui,sans-serif;color:#1d4ed8}
+body.pv #tlogp.open{position:fixed;inset:0;z-index:70;max-height:none!important;overflow:auto;padding:16px 14px calc(16px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:flex;align-items:center;gap:8px}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -442,7 +445,7 @@ body.pv .tools{display:none!important}
 <div class="editbar" id="xpbar"></div>
 <div class="rowsp" id="rowsp"></div>
 <div class="rowsp" id="tlogp">
-  <div class="tlh"><b>Timed log</b><span id="tlnext" class="pnote"></span></div>
+  <div class="tlh"><b>Timed log</b><span id="tlnext" class="pnote"></span><button id="tldone" type="button">Done</button></div>
   <div class="pnote">Log times (used every day)</div>
   <div id="tltimes" style="margin:4px 0"></div>
   <div class="tlrow"><input id="tlnew" type="time" step="60"><button id="tladd">Add time</button></div>
@@ -493,7 +496,7 @@ body.pv .tools{display:none!important}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-211729";
+var APPV="2026-11-13-211859";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2675,7 +2678,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button></div>';
+  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Log</button></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2773,6 +2776,7 @@ jobsRender();
     if(ch){pushUndo({k:"m",m:snap0,a:marksOf(cur)});save();renderRows();counts();if(typeof fUI==="function")fUI();}}
   function move(d){var cs=cols(),n=Math.max(0,Math.min(cs.length-1,PD.ci+d));if(n===PD.ci)return;PD.ci=n;PD.follow=true;fillHere();render();try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
   box.querySelectorAll("#spx button").forEach(function(b){b.onclick=function(e){e.stopPropagation();var id=b.getAttribute("data-p");if(id==="rowsb"&&document.body.classList.contains("pv")){var j=fJ(cur);focusOff();setTimeout(function(){var p=document.getElementById("rowsp");if(!p.classList.contains("open"))document.getElementById("rowsb").click();},0);return;}document.getElementById(id).click();};});
+  document.getElementById("tldone").onclick=function(){var t=document.getElementById("tlogp");if(t.classList.contains("open"))document.getElementById("tlb").click();};
   /* ---- drag the picker card anywhere; position kept per layout; double-tap the grip to reset ---- */
   var GK2="blair_spadpos_v1",GP={};try{GP=JSON.parse(localStorage.getItem(GK2)||"{}")||{};}catch(e){GP={};}
   function gkey(){return document.body.classList.contains("pv")?"pv":(innerWidth>innerHeight&&innerHeight<520?"land":"float");}
