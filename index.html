@@ -581,7 +581,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-081234";
+var APPV="2026-11-14-081312";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1339,7 +1339,7 @@ document.getElementById("rowsb").addEventListener("click",function(){document.ge
 document.getElementById("ptarget").value=P.target!=null?P.target:"";
 document.getElementById("pdrv").value=P.drivers>0?P.drivers:"";
 document.getElementById("pdrv").oninput=function(){var v=parseInt(this.value,10);P.drivers=v>0?v:null;psave();paceUpdate();mhUpdate();if(window.fcRender)fcRender();};
-document.getElementById("ptarget").oninput=function(){var v=parseInt(this.value,10);P.target=isNaN(v)?null:v;psave();if(window.capBar)capBar();plogRender();paceUpdate();if(window.fcRender)fcRender();};
+document.getElementById("ptarget").oninput=function(){var v=parseInt(this.value,10);window.__locT=Date.now();P.target=isNaN(v)?null:v;psave();if(window.capBar)capBar();plogRender();paceUpdate();if(window.fcRender)fcRender();};
 /* snapshot of cars marked per lot and per row (row) at each log, used to show what was worked */
 function workSnap(){var o={};LOTS.forEach(function(L,i){var m={};if(bandOf[i]&&sel[i])bandOf[i].forEach(function(j,k){if(sel[i][k]===1&&bands[i][j]){var nm=bands[i][j].name;m[nm]=(m[nm]||0)+1;}});o[L.name]=m;});return o;}
 function workDiff(a,b){
@@ -2045,7 +2045,7 @@ function capBar(){var el=document.getElementById("capbar");if(!el)return;var tg=
   el.textContent=ok?("\u2713 Enough rows open: "+CAPT.toLocaleString()+" spots for "+tg.toLocaleString()+" cars"+(CAPT>tg?" ("+(CAPT-tg).toLocaleString()+" extra)":"")):("Need "+(tg-CAPT).toLocaleString()+" more spots: "+CAPT.toLocaleString()+" open for "+tg.toLocaleString()+" cars");
   if(ok&&capPrev===false&&!P.start){var t=document.getElementById("captoast");t.textContent="\u2713 Enough rows open for "+tg.toLocaleString()+" cars\n"+CAPT.toLocaleString()+" spots";t.style.whiteSpace="pre-line";t.className="on";clearTimeout(capT);capT=setTimeout(function(){t.className="";},4500);t.onclick=function(){t.className="";};}
   if(ok&&CAPT>tg){var xb=document.createElement("button");xb.id="capx";xb.textContent="X out "+(CAPT-tg).toLocaleString();xb.onclick=function(e){e.stopPropagation();xoutAsk();};el.appendChild(xb);}
-  var eq=CAPT===tg;if(eq&&capEq===false)countSay();capEq=eq;
+  var eq=CAPT===tg,gt=document.getElementById("gate");if(eq&&capEq===false&&Date.now()-(window.__locT||0)<5000&&!(gt&&gt.offsetParent))countSay();capEq=eq;
   capPrev=ok;}
 var capEq=null;
 function xoutCols(i,j){var m={};SP[i].forEach(function(sp,k){if(bandOf[i][k]===j)(m[sp[1]]||(m[sp[1]]=[])).push(k);});var cs=Object.keys(m).map(Number).sort(function(a,b){return a-b;});return{cs:cs,m:m};}
@@ -2061,7 +2061,7 @@ function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fLis
   document.getElementById("ov").classList.add("mid");
   sh.querySelector("#xno").onclick=ovClose;
   sh.querySelector("#xa").onclick=function(){ovClose();xoutDo(pa);};sh.querySelector("#xz").onclick=function(){ovClose();xoutDo(pz);};}
-function xoutDo(pl){if(!pl.length)return;var by={};pl.forEach(function(x){(by[x[0]]||(by[x[0]]=[])).push(x[1]);});
+function xoutDo(pl){if(!pl.length)return;window.__locT=Date.now();var by={};pl.forEach(function(x){(by[x[0]]||(by[x[0]]=[])).push(x[1]);});
   Object.keys(by).forEach(function(ii){var i=+ii,snap0=marksOf(i);by[ii].forEach(function(k){if(sel[i][k]===0)sel[i][k]=2;});recount(i);undo[i].push({k:"m",m:snap0,a:marksOf(i)});if(undo[i].length>30)undo[i].shift();});
   draw();save();renderRows();counts();if(typeof fUI==="function")fUI();try{if(typeof toast==="function")toast(pl.length+" spot"+(pl.length===1?"":"s")+" X'd out");}catch(e){}}
 function countSay(){try{if(matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;var old=document.getElementById("fwcv");if(old)old.remove();
@@ -2916,7 +2916,7 @@ jobsRender();
     try{var mo=new MutationObserver(sy);mo.observe(om,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});mo.observe(of,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});}catch(e){}sy();})();
   /* ---- row full popup ---- */
   var RF={open:{},local:0};
-  var pu0=pushUndo;pushUndo=function(){RF.local=Date.now();return pu0.apply(this,arguments);};
+  var pu0=pushUndo;pushUndo=function(){RF.local=window.__locT=Date.now();return pu0.apply(this,arguments);};
   function rowFullCheck(){if(isE())return;var j=fJ(cur);if(j<0)return;var k=cur+"|"+j,st=fStats(cur,j),was=RF.open[k];RF.open[k]=st.open;
     if(was>0&&st.open<=0&&Date.now()-RF.local<4000)rowFullShow(j,st);}
   function rowFullShow(j,st){var b=bands[cur][j],L=LOTS[cur],m=MT[L.name]||{},t0=null,now=Date.now();
