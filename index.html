@@ -385,6 +385,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
 body.pv{background:var(--aisle)}body.pv .fbar.on{margin:8px 10px 0;padding:6px;border:0;border-radius:16px;background:var(--card);box-shadow:0 2px 8px rgba(15,23,42,.08)}
 body.pv .fbar button{border-radius:12px!important;border:1px solid var(--line);background:var(--card);box-shadow:0 1px 3px rgba(15,23,42,.08)}
 body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!important;font-size:32px!important;font-weight:700}body.pv .fbar #fnext.go{min-width:96px;font-size:18px!important}body.pv .fbar #fall{min-height:58px!important}body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
+#spsc #sclog{color:#fff;background:#2f7d32;border-color:#2f7d32;font-weight:800}#spsc #sclog.flash{background:#1f5fbf;border-color:#1f5fbf}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -499,7 +500,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-212805";
+var APPV="2026-11-13-213029";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2681,7 +2682,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Log</button></div><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
+  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Timed log</button></div><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button><button id="sclog">Log</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2746,6 +2747,8 @@ jobsRender();
   function lanesApply(){fillHere();render();}
   (function(){var m=document.getElementById("scmode"),f=document.getElementById("scfoc"),om=document.getElementById("fcyc"),of=document.getElementById("ffoc");
     function sy(){m.textContent=om.textContent;m.className=om.className;f.textContent=of.textContent;f.className=of.className;}
+    var lg=document.getElementById("sclog"),ol=document.getElementById("logb");function syl(){lg.textContent=ol.textContent;lg.classList.toggle("flash",ol.classList.contains("flash"));}
+    lg.onclick=function(e){e.stopPropagation();ol.click();syl();};try{new MutationObserver(syl).observe(ol,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});}catch(e){}syl();
     m.onclick=function(e){e.stopPropagation();om.click();sy();};f.onclick=function(e){e.stopPropagation();of.click();sy();};
     try{var mo=new MutationObserver(sy);mo.observe(om,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});mo.observe(of,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});}catch(e){}sy();})();
   /* ---- row full popup ---- */
