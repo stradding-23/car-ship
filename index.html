@@ -573,7 +573,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
     <button id="pzb2" style="display:none;white-space:nowrap">Pause</button>
     <button id="pfin" class="act" style="display:none;white-space:nowrap">Finish</button>
     <button id="pnew" style="white-space:nowrap">New</button>
-    <button id="yreset" style="white-space:nowrap">Reset</button>
+    <button id="yreset" style="white-space:nowrap">Reset yard</button>
   </div>
   <div id="jctx" class="jctx">
     <div class="row3c"><div style="flex:2 1 110px"><label for="jvsel">Vessel</label><select id="jvsel"><option value="">Pick a vessel…</option></select><input id="jves" type="text" autocomplete="off" placeholder="Type the ship name" style="display:none;margin-top:4px"><datalist id="jvesl"></datalist><div class="pnote" id="jvnote" style="margin-top:4px"></div></div>
@@ -606,7 +606,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-082512";
+var APPV="2026-11-14-082846";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
