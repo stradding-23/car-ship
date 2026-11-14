@@ -580,7 +580,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-075239";
+var APPV="2026-11-14-075726";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1777,7 +1777,7 @@ function jobBuild(fin,cars){var H=3600000,s0=P.log[0],start=P.start,w0=s0&&s0.w;
   return{id:"j"+start,start:start,finish:fin,cars:cars,workH:+wh.toFixed(3),pausedH:+(pausedMs(start,fin)/H).toFixed(3),
     rate:wh>0?+(cars/wh).toFixed(1):null,drivers:P.drivers||null,target:P.target!=null?P.target:null,
     lots:lots,rows:wRows(w0,workSnap()),lot:domLot(lots),haul:(function(){var d=jobDistOf({lots:lots,rows:wRows(w0,workSnap()),berth:P.berth});return d?Math.round(d):null;})(),k:ks.length?+jMedian(ks).toFixed(3):null,proj:proj.slice(-12),saved:Date.now(),
-    x:xSnap(),vessel:P.vessel||null,berth:P.berth||null,foreman:P.foreman||null,seg:(function(){try{return segsOf(P.log.concat([{t:fin,n:P.log[0].n+cars}])).slice(0,80);}catch(e){return [];}})(),cond:condMin(start,fin),effH:+(effMs(start,fin)/H).toFixed(3),base:effMs(start,fin)>0?+(cars/(effMs(start,fin)/H)).toFixed(1):null};}
+    x:xSnap(),ft:ftSnap(start,fin),vessel:P.vessel||null,berth:P.berth||null,foreman:P.foreman||null,seg:(function(){try{return segsOf(P.log.concat([{t:fin,n:P.log[0].n+cars}])).slice(0,80);}catch(e){return [];}})(),cond:condMin(start,fin),effH:+(effMs(start,fin)/H).toFixed(3),base:effMs(start,fin)>0?+(cars/(effMs(start,fin)/H)).toFixed(1):null};}
 function jobDiffTxt(j){var last=j.proj&&j.proj.length?j.proj[j.proj.length-1]:null;if(!last)return "";
   var m=Math.round((j.finish-last.p)/60000);
   return "At "+fmtT(last.t)+" it projected "+fmtT(last.p)+"; the job finished "+(m===0?"right on time":Math.abs(m)+" min "+(m>0?"later":"earlier"))+".";}
@@ -2409,6 +2409,13 @@ setMode();draw();counts();renderRows();
   document.getElementById("hintx").onclick=function(){h.classList.remove("open");try{localStorage.setItem(k,"1");}catch(e){}};})();
 
 /* ===== X-out memory: every finished job records which spots were X'd out; X out mode suggests the usual ones ===== */
+function ftSnap(start,fin){var o={},s0=Math.floor(start/1000)-600,s1=Math.ceil(fin/1000)+600,any=0;
+  try{LOTS.forEach(function(L,i){var m=MT[L.name]||{},r={},k;for(k in m){var t=m[k];if(!(t>=s0&&t<=s1))continue;var p=k.split(","),g=grid[i][(+p[0])*NC[i]+(+p[1])];
+      if(g==null||g<0||sel[i][g]!==1)continue;var bd=bands[i][bandOf[i][g]],nm=(bd&&bd.name?bd.name:"?").replace(/[.#$\/\[\]]/g,"_");
+      (r[nm]||(r[nm]=[])).push([+p[0],+p[1],t-Math.floor(start/1000)]);any=1;}
+    for(k in r)r[k].sort(function(a,b){return a[2]-b[2];});
+    if(Object.keys(r).length)o[L.name.replace(/[.#$\/\[\]]/g,"_")]=r;});}catch(e){return null;}
+  return any?o:null;}
 function xSnap(){var o={};LOTS.forEach(function(L,i){var a=[];if(SP[i]&&sel[i])SP[i].forEach(function(sp,k){if(sel[i][k]===2)a.push(sp[0]+","+sp[1]);});if(a.length)o[L.name]=a;});return o;}
 var XPOFF={};
 function xPred(i){var L=LOTS[i],nm=L.name,all=[],same=[],ves=P.vessel?String(P.vessel).toLowerCase():null;
