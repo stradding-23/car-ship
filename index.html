@@ -62,7 +62,7 @@ button{min-height:40px;touch-action:manipulation}
 .top{flex-wrap:wrap;row-gap:2px}
 #capbar{display:none;padding:5px 10px;font-size:14px;font-weight:600;text-align:center}#capbar.on{display:block}
 .xrw{display:flex;flex-wrap:wrap;gap:8px}.xrc{min-width:52px;min-height:46px;padding:6px 12px;font:inherit;font-size:17px;font-weight:700;border-radius:12px;border:1px solid #c3c9d2;background:#fff;color:#1d4ed8}.xrc.on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
-#capx{margin-left:8px;font:inherit;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#1d4ed8;min-height:28px;vertical-align:middle}#capbar.ok{background:#1f7a3a;color:#fff}#capbar.low{background:#fff2cc;color:#5a4300}
+#capx{white-space:nowrap;margin-left:8px;font:inherit;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#1d4ed8;min-height:28px;vertical-align:middle}#capbar.ok{background:#1f7a3a;color:#fff}#capbar.low{background:#fff2cc;color:#5a4300}
 #captoast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:60;background:#1f7a3a;color:#fff;padding:14px 18px;border-radius:12px;font-size:17px;font-weight:700;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:86vw}#captoast.on{display:block}
 .top .eta{flex-basis:100%;text-align:left;order:9}
 .top .eta:empty{display:none}
@@ -582,7 +582,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-081516";
+var APPV="2026-11-14-081732";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
