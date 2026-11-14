@@ -461,6 +461,7 @@ body.pv #spx button[data-p="bossb"]{background:#eef2ff!important;color:#3730a3!i
 body.pv #spx button[data-p="tlb"]{background:#f0f9ff!important;color:#0c4a6e!important;border-color:#bae6fd!important}
 body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!important}body.pv #spsc #scfoc{background:#e0e7ff!important;border-color:#c7d2fe!important;color:#3730a3!important}
 #spsc #sclog.off,body.pv #spsc #sclog.off{opacity:.55}
+.hint{display:none!important}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -574,7 +575,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-073536";
+var APPV="2026-11-14-074508";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
