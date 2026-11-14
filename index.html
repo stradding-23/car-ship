@@ -382,6 +382,9 @@ body.pv .tools{display:none!important}
 #tldone{display:none;margin-left:auto;min-height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);font:700 14px system-ui,sans-serif;color:#1d4ed8}
 body.pv #tlogp.open{position:fixed;inset:0;z-index:70;max-height:none!important;overflow:auto;padding:16px 14px calc(16px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
 body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:flex;align-items:center;gap:8px}
+body.pv{background:var(--aisle)}body.pv .fbar.on{margin:8px 10px 0;padding:6px;border:0;border-radius:16px;background:var(--card);box-shadow:0 2px 8px rgba(15,23,42,.08)}
+body.pv .fbar button{border-radius:12px!important;border:1px solid var(--line);background:var(--card);box-shadow:0 1px 3px rgba(15,23,42,.08)}
+body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -496,7 +499,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-212441";
+var APPV="2026-11-13-212701";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
