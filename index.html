@@ -299,7 +299,7 @@ h2{font-size:16px;margin:0 0 2px}.card .hh{display:flex;justify-content:space-be
 #spnum{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px 10px;text-align:center;line-height:1.1;box-shadow:0 2px 8px rgba(0,0,0,.15)}#spnum b{font-size:20px;display:block}#spnum small{font-size:11px;color:var(--mut)}
 #spcol{display:flex;flex-direction:column;gap:5px}
 .spb{width:calc(var(--sz) * 1.45);height:var(--sz);min-height:0!important;padding:0;margin:0;border-radius:8px;border:2px solid #b8a65a;background:var(--empty);font-size:calc(var(--sz) * .5);font-weight:800;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
-.spb.car{background:#9cc0f5;border-color:#9cc0f5}.spb.sel{background:var(--car);border-color:#0d3b8a;border-width:4px;color:#fff;font-size:calc(var(--sz) * .34)}.spb.blk{background:var(--blk);border-color:var(--blk);color:var(--ink)}.spb.none{visibility:hidden}
+.spb.car{background:#9cc0f5;border-color:#9cc0f5}.spb.sel{background:var(--car);border-color:#0d3b8a;border-width:4px;color:#fff;font-size:calc(var(--sz) * .34)}.spb.blk{background:var(--blk);border-color:var(--blk);color:var(--ink)}.spb.none{background:transparent;border-style:dashed;border-color:#b8a65a;box-shadow:none;opacity:.8}.spb.none.sel{background:rgba(37,99,235,.25);border-color:#0d3b8a}
 #spball{position:relative;width:236px;height:66px;border-radius:33px;margin-top:6px;background:linear-gradient(180deg,#dfe6f0,#eef2f7);box-shadow:inset 0 2px 6px rgba(0,0,0,.18),0 1px 0 rgba(255,255,255,.6);border:1px solid #c5d0de;display:flex;align-items:center;justify-content:space-between;padding:0 18px;box-sizing:border-box;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #spball .chv{font-style:normal;font-size:18px;letter-spacing:-6px;color:#9aabc2;transition:color .15s,transform .15s}#spball .chv.l{margin-left:-4px}#spball .chv.r{margin-right:2px}
 #spball.gl .chv.l,#spball.gr .chv.r{color:#1f5fbf;transform:scale(1.15)}
@@ -419,7 +419,7 @@ body.padon #brushf{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bott
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-202829";
+var APPV="2026-11-13-203210";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2620,7 +2620,7 @@ jobsRender();
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
     box.style.setProperty("--sz",sz+"px");
     document.getElementById("spnum").innerHTML="<b>"+esc(String(spotNo(c)))+"</b><small>"+(PD.ci+1)+" of "+cs.length+"</small>";
-    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"'+(v<0?" disabled":"")+'></button>';});
+    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"></button>';});
     var col=document.getElementById("spcol");col.innerHTML=h;
     col.querySelectorAll(".spb").forEach(function(b){b.onclick=function(){var x=rs[+b.getAttribute("data-q")];if(!x)return;var r=x[0];if(PD.ln[r])delete PD.ln[r];else PD.ln[r]=1;
       if(x[1]>=0){var vv=tool===1?2:1,o=sel[cur][x[1]];if(PD.ln[r]&&o===0)setLanes([x],[],vv);else if(!PD.ln[r]&&o===vv)setLanes([],[x],vv);}render();};});
