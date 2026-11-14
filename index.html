@@ -411,6 +411,8 @@ body.pv #spx button{font-weight:700!important}
 #spx button[data-p="dashb"]{background:#ecfeff!important;color:#0e7490!important;border-color:#a5f3fc!important}
 #spx button[data-p="bossb"]{background:#f5f3ff!important;color:#6d28d9!important;border-color:#ddd6fe!important}
 #spx button[data-p="tlb"]{background:#fffbeb!important;color:#92400e!important;border-color:#fde68a!important}
+body.pv #spsc #scmode{background:#f0fdf4!important;border-color:#bbf7d0!important}body.pv #spsc #scmode.m1{background:#fef2f2!important;border-color:#fecaca!important}body.pv #spsc #scmode.m2{background:#fffbeb!important;border-color:#fde68a!important}
+body.pv #spsc #scfoc{background:#eff6ff!important;border-color:#bfdbfe!important}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -524,7 +526,7 @@ body.pv #spx button{font-weight:700!important}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-215715";
+var APPV="2026-11-13-215731";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
