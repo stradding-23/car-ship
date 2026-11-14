@@ -414,7 +414,7 @@ body.padon #brushf{right:12px}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-201523";
+var APPV="2026-11-13-201621";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2615,9 +2615,15 @@ jobsRender();
     var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"'+(v<0?" disabled":"")+'></button>';});
     var col=document.getElementById("spcol");col.innerHTML=h;
     col.querySelectorAll(".spb").forEach(function(b){b.onclick=function(){var x=rs[+b.getAttribute("data-q")];if(!x)return;var r=x[0];if(PD.ln[r])delete PD.ln[r];else PD.ln[r]=1;
-      if(PD.ln[r]&&x[1]>=0&&sel[cur][x[1]]===0)setK([x],tool===1?2:1);render();};});
+      if(x[1]>=0){var vv=tool===1?2:1,o=sel[cur][x[1]];if(PD.ln[r]&&o===0)setLanes([x],[],vv);else if(!PD.ln[r]&&o===vv)setLanes([],[x],vv);}render();};});
     box.classList.add("on");document.body.classList.add("padon");show(c);}
-  function fillHere(){var cs=cols(),c=cs[PD.ci];if(c==null)return;var rs=rowsAt(c),L=[];rs.forEach(function(x){if(PD.ln[x[0]]&&x[1]>=0&&sel[cur][x[1]]===0)L.push(x);});if(L.length)setK(L,tool===1?2:1);}
+  function fillHere(){var cs=cols(),c=cs[PD.ci];if(c==null)return;var v=tool===1?2:1,rs=rowsAt(c),F=[],E=[];
+    rs.forEach(function(x){if(x[1]<0)return;var o=sel[cur][x[1]];if(PD.ln[x[0]]){if(o===0)F.push(x);}else if(o===v)E.push(x);});
+    if(F.length||E.length)setLanes(F,E,v);}
+  function setLanes(F,E,v){var snap0=marksOf(cur),ch=false;
+    function one(x,w){var r=x[0],k=x[1],o=sel[cur][k];if(o===w)return;sel[cur][k]=w;if(o===1)cnt[cur]--;if(w===1)cnt[cur]++;if(o===2)cap[cur]++;if(w===2)cap[cur]--;ch=true;cell(cur,r,SP[cur][k][1]);}
+    F.forEach(function(x){one(x,v);});E.forEach(function(x){one(x,0);});
+    if(ch){pushUndo({k:"m",m:snap0,a:marksOf(cur)});save();renderRows();counts();if(typeof fUI==="function")fUI();}}
   function move(d){var cs=cols(),n=Math.max(0,Math.min(cs.length-1,PD.ci+d));if(n===PD.ci)return;PD.ci=n;fillHere();render();try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
   var ball=document.getElementById("spball"),sx=null,cx0=0,acc=0,moved=false,raf2=0,lt=0,DZ=14;
   function loop(){if(sx===null){clearInterval(raf2);raf2=0;return;}var t=Date.now(),dx=cx0-sx,ad=Math.abs(dx),dt=lt?(t-lt)/1000:0;lt=t;
