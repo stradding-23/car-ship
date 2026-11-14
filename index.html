@@ -419,7 +419,7 @@ body.padon #brushf{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bott
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-202518";
+var APPV="2026-11-13-202653";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2614,7 +2614,7 @@ jobsRender();
   function render(){
     if(!on()){box.classList.remove("on");hl.style.display="none";document.body.classList.remove("padon");return;}
     var cs=cols();if(!cs.length){box.classList.remove("on");hl.style.display="none";return;}
-    var key=cur+"|"+fJ(cur);if(key!==PD.key){PD.key=key;PD.ci=firstOpen(cs);PD.ln={};PD.follow=true;}
+    var key=cur+"|"+fJ(cur);if(key!==PD.key){PD.key=key;PD.ci=firstOpen(cs);PD.ln={};PD.follow=true;var vv0=tool===1?2:1;rowsAt(cs[Math.max(0,Math.min(cs.length-1,PD.ci))]).forEach(function(x){if(x[1]>=0&&sel[cur][x[1]]===vv0)PD.ln[x[0]]=1;});}
     PD.ci=Math.max(0,Math.min(cs.length-1,PD.ci));var c=cs[PD.ci],rs=rowsAt(c);
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
     box.style.setProperty("--sz",sz+"px");
