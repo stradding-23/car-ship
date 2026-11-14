@@ -573,7 +573,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-220824";
+var APPV="2026-11-13-221136";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2422,9 +2422,12 @@ function bvSave(){try{localStorage.setItem(BVK,JSON.stringify(BV));}catch(e){}}
 function bvBase(){var d=String(BV.db||"").trim().replace(/\/+$/,"");return /^https:\/\//i.test(d)?d:"";}
 function bvId(){return String(BV.id||"").trim().replace(/[^A-Za-z0-9_-]/g,"").slice(0,40);}
 function bvReady(){return !!(bvBase()&&bvId()&&BV.key);}
+function bvYs(i){var rh=new Array(NR[i]).fill(0),vis={},hid={};
+  bands[i].forEach(function(b,j){var o=isHid(i,j)?hid:vis;for(var r=(LOTS[i].hdr&&b.rul>=0?b.rul:b.s);r<=b.e;r++)o[r]=1;if(b.rul>=0)o[b.rul]=1;});
+  var y=[0];for(var r=0;r<NR[i];r++)y.push(y[r]+((hid[r]&&!vis[r])?0:LOTS[i].rh[r]));if(LOTS[i].top)for(var q=0;q<y.length;q++)y[q]+=LOTS[i].top;return y;}
 function bvMap(i){try{
-  var byR={};bandOf[i].forEach(function(j,k){if(isHid(i,j))return;var q=SP[i][k];(byR[q[0]]=byR[q[0]]||[]).push([q[1],sel[i][k]|0,j]);});
-  var runs=[];Object.keys(byR).forEach(function(r){r=+r;var a=byR[r].sort(function(x,y){return x[0]-y[0];}),y0=Math.round(ys[i][r]),h=Math.round(ys[i][r+1])-y0,o=null;
+  var YS=bvYs(i);var byR={};bandOf[i].forEach(function(j,k){if(isHid(i,j))return;var q=SP[i][k];(byR[q[0]]=byR[q[0]]||[]).push([q[1],sel[i][k]|0,j]);});
+  var runs=[];Object.keys(byR).forEach(function(r){r=+r;var a=byR[r].sort(function(x,y){return x[0]-y[0];}),y0=Math.round(YS[r]),h=Math.round(YS[r+1])-y0,o=null;
     a.forEach(function(e){if(o&&e[0]===o.c1+1&&e[1]===o.s&&e[2]===o.j){o.c1=e[0];}else{if(o)runs.push(o);o={r:r,c0:e[0],c1:e[0],s:e[1],j:e[2],y:y0,h:h};}});if(o)runs.push(o);});
   var flat=[];runs.forEach(function(o){var x0=Math.round(xs[i][o.c0]);flat.push(x0,o.y,Math.round(xs[i][o.c1+1])-x0,o.h,o.s,o.j);});
   return{b:bands[i].map(function(b){return rlShort(b.name);}),r:flat};}catch(e){return null;}}
