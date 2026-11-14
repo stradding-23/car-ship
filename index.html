@@ -580,7 +580,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-080054";
+var APPV="2026-11-14-080412";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -2038,12 +2038,17 @@ document.getElementById("fctgo").onclick=function(){var r=fcParse(document.getEl
 
 var capPrev=null,capT=0;
 function capBar(){var el=document.getElementById("capbar");if(!el)return;var tg=P.target;
-  if(!(tg>0)){el.className="";el.textContent="";capPrev=null;return;}
+  if(!(tg>0)){el.className="";el.textContent="";capPrev=null;capEq=null;return;}
   var ok=CAPT>=tg;
   el.className="on "+(ok?"ok":"low");
   el.textContent=ok?("\u2713 Enough rows open: "+CAPT.toLocaleString()+" spots for "+tg.toLocaleString()+" cars"+(CAPT>tg?" ("+(CAPT-tg).toLocaleString()+" extra)":"")):("Need "+(tg-CAPT).toLocaleString()+" more spots: "+CAPT.toLocaleString()+" open for "+tg.toLocaleString()+" cars");
   if(ok&&capPrev===false&&!P.start){var t=document.getElementById("captoast");t.textContent="\u2713 Enough rows open for "+tg.toLocaleString()+" cars\n"+CAPT.toLocaleString()+" spots";t.style.whiteSpace="pre-line";t.className="on";clearTimeout(capT);capT=setTimeout(function(){t.className="";},4500);t.onclick=function(){t.className="";};}
+  var eq=CAPT===tg;if(eq&&capEq===false)countSay();capEq=eq;
   capPrev=ok;}
+var capEq=null;
+function countSay(){try{if(!window.speechSynthesis)return;var u=new SpeechSynthesisUtterance("Congratulations. You can count.");u.rate=0.82;u.pitch=0.7;u.volume=1;
+  var vs=speechSynthesis.getVoices()||[],v=vs.filter(function(x){return /^en/i.test(x.lang)&&/male|fred|daniel|alex|david|guy|aaron|arthur/i.test(x.name)&&!/female/i.test(x.name);})[0]||vs.filter(function(x){return /^en/i.test(x.lang);})[0];
+  if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 var FCS=null;
 function fcYardLots(){var o=[];LOTS.forEach(function(L,i){if(YARDS.length>1&&L.yard&&L.yard!==YARD)return;if(bands[i]&&bands[i].length)o.push(i);});return o;}
 function fcLayoutText(){return fcYardLots().map(function(i){var c={};bandOf[i].forEach(function(j){c[j]=(c[j]||0)+1;});
