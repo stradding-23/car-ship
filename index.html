@@ -488,7 +488,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
-<div id="pv"><details id="pvrow"><summary><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg><span id="pvrt" style="flex:1 1 auto"></span><span id="pvrs"></span></summary><div id="pvmini"></div><div class="pvh">Tap anywhere on the row to jump there</div></details><details id="pvz" open><summary class="pvzh"><span class="pvzt"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>CLOSE-UP</span><span id="pvzr"></span></summary><div id="pvzc"></div></details></div>
+<div id="pv"><details id="pvrow"><summary><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg><span id="pvrt" style="flex:1 1 auto"></span><span id="pvrs"></span></summary><div id="pvmini"></div></details><details id="pvz" open><summary class="pvzh"><span class="pvzt"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>CLOSE-UP</span><span id="pvzr"></span></summary><div id="pvzc"></div></details></div>
 <div id="rfull" role="dialog" aria-modal="true" aria-labelledby="rft"><div class="rfc"><div class="rfi"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2f7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div><div><div id="rft" class="rft"></div><div id="rfs" class="rfs"></div></div><div id="rfg" class="rfg"></div><button id="rfnext" class="rfn"></button><button id="rfstay" class="rfst">Stay on this row</button></div></div>
 <div id="fab"><div id="fmodes"><button id="fcyc" class="m0">Cars</button><button id="ffoc" class="foc">1 row</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
@@ -496,7 +496,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-211859";
+var APPV="2026-11-13-212118";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
