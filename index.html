@@ -374,7 +374,7 @@ body.pv.padon #fab{right:10px;bottom:calc(132px + env(safe-area-inset-bottom,0px
 #spad.drag{box-shadow:0 18px 44px rgba(15,23,42,.3)!important}#spad.drag #spgrip{cursor:grabbing}
 #pvz summary{list-style:none;cursor:pointer;min-height:28px;align-items:center}#pvz summary::-webkit-details-marker{display:none}
 .pvzt{display:flex;align-items:center;gap:6px}.pvzt svg{transition:transform .2s}#pvz[open] .pvzt svg{transform:rotate(90deg)}#pvz:not([open]){padding-bottom:4px}
-#spx{display:flex;gap:6px;margin-top:8px}#spx button{flex:1 1 0;min-height:40px;margin:0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 13px system-ui,sans-serif}
+#spx{display:none;flex-direction:column;gap:6px}body.pv #spx{display:flex}#spx button{min-width:0!important;width:92px;min-height:40px!important;flex:0 0 auto!important;font-size:13px!important;padding:0 4px}#spx button{flex:1 1 0;min-height:40px;margin:0;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 13px system-ui,sans-serif}
 .tools #moreb,.tools #walkb,.tools #clr,#moreb{display:none!important}
 @media (min-width:0px){.tbtn #rowsb,.tools #dashb,.tools #bossb{display:inline-block!important}body.pv .tbtn #rowsb,body.pv .tools #dashb,body.pv .tools #bossb{display:none!important}}
 body.pv #spball{height:54px}body.pv #spball .knob{width:46px;height:46px}body.pv #spad.on{gap:8px;padding-top:8px}body.pv #spnum .spn b{font-size:24px}
@@ -488,7 +488,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
-<div id="pv"><details id="pvrow"><summary><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg><span id="pvrt" style="flex:1 1 auto"></span><span id="pvrs"></span></summary><div id="pvmini"></div></details><details id="pvz" open><summary class="pvzh"><span class="pvzt"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>CLOSE-UP</span><span id="pvzr"></span></summary><div id="pvzc"></div></details><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Log</button></div></div>
+<div id="pv"><details id="pvrow"><summary><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg><span id="pvrt" style="flex:1 1 auto"></span><span id="pvrs"></span></summary><div id="pvmini"></div></details><details id="pvz" open><summary class="pvzh"><span class="pvzt"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>CLOSE-UP</span><span id="pvzr"></span></summary><div id="pvzc"></div></details></div>
 <div id="rfull" role="dialog" aria-modal="true" aria-labelledby="rft"><div class="rfc"><div class="rfi"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2f7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div><div><div id="rft" class="rft"></div><div id="rfs" class="rfs"></div></div><div id="rfg" class="rfg"></div><button id="rfnext" class="rfn"></button><button id="rfstay" class="rfst">Stay on this row</button></div></div>
 <div id="fab"><div id="fmodes"><button id="fcyc" class="m0">Cars</button><button id="ffoc" class="foc">1 row</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
@@ -496,7 +496,7 @@ body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:fle
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-212236";
+var APPV="2026-11-13-212441";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2678,7 +2678,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
+  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Log</button></div><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2712,7 +2712,7 @@ jobsRender();
         for(var d=0;d<cs.length;d++){var hit=false;[ci0+d,ci0-d].forEach(function(q){if(hit||q<0||q>=cs.length)return;var k=grid[cur][r*nc0+cs[q]];if(k>=0&&bandOf[cur][k]===j0){hit=true;if(sel[cur][k]===vv0)PD.ln[r]=1;}});if(hit)break;}});}}
     PD.ci=Math.max(0,Math.min(cs.length-1,PD.ci));var c=cs[PD.ci],rs=rowsAt(c);
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
-    var pvw=pvOK();setPv(pvw);if(pvw){var zb=document.getElementById("pvz").getBoundingClientRect().bottom,xb=document.getElementById("spx").getBoundingClientRect().bottom;zb=Math.max(zb,xb);var av2=innerHeight-zb-14-172;sz=Math.max(24,Math.min(56,Math.floor(av2/n)-7));}
+    var pvw=pvOK();setPv(pvw);if(pvw){var zb=document.getElementById("pvz").getBoundingClientRect().bottom;var av2=innerHeight-zb-14-172;sz=Math.max(24,Math.min(56,Math.floor(av2/n)-7));}
     box.style.setProperty("--sz",sz+"px");
     var st=fStats(cur,fJ(cur)),pct=isE()?0:(st.cap?Math.round(st.c/st.cap*100):0);
     document.getElementById("spnum").innerHTML='<div class="spl">'+(isE()?"Edit spot":"Spot")+'</div><div class="spr">'+(isE()?esc(String(band().n))+" spots":st.c.toLocaleString()+" / "+st.cap.toLocaleString())+'</div><div class="spn"><b>'+esc(String(isE()?PD.ci+1:spotNo(c)))+'</b><small>of '+cs.length+'</small></div><div class="spr2">'+(isE()?"":st.open.toLocaleString()+" open")+'</div>'+(isE()?"":'<div class="pb"><i style="width:'+pct+'%"></i></div>');
