@@ -349,11 +349,11 @@ body.pv #pv{display:block}body.pv #wrap{display:none!important}body.pv .hint{dis
 #pvzc .zn{font-size:10px;font-weight:700;text-align:center;color:var(--mut)}
 #pvzc .zc{height:22px;border-radius:4px;border:1px solid #dcc98a;background:#fcefc2;box-sizing:border-box}
 #pvzc .zc.car{background:#3b7cf4;border-color:#1d4ed8}#pvzc .zc.blk{background:#bfc6ce;border-color:#aab2bb}#pvzc .zc.none{background:transparent;border:1px dashed #cbbd86}
-body.pv #spad{left:10px;right:102px;transform:none;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+body.pv #spad{left:10px;right:10px;transform:none;bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 body.pv #spnum,body.pv #spball{width:100%}
 #spmid{display:flex;gap:10px;align-items:center;justify-content:center}
 #spsc{display:none;flex-direction:column;gap:6px}#spsc button{min-width:84px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);font:700 13px system-ui,sans-serif;color:var(--ink);margin:0}
-#spsc button:first-child{color:#1d4ed8}
+#spsc button.m0{color:#2f5d1c}#spsc button.m1{color:#b42318}#spsc button.m2{color:#8a5a00}#spsc button.act{color:#1d4ed8}body.pv #fab{display:none!important}#spsc button{min-width:96px;min-height:52px;font-size:15px}
 body.pv #spsc{display:flex}#spad.ed #spsc{display:none}
 body.pv.padon #fab{right:10px;bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 #fmodes{border:0!important;box-shadow:none!important;background:transparent!important;gap:6px;overflow:visible!important;border-radius:0!important}
@@ -488,7 +488,7 @@ body.pv.padon #fab{right:10px;bottom:calc(132px + env(safe-area-inset-bottom,0px
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-210832";
+var APPV="2026-11-13-211013";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2670,7 +2670,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spcol"></div><div id="spsc"><button id="scon">All on</button><button id="scoff">All off</button><button id="scsame">Same as last</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
+  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2730,9 +2730,10 @@ jobsRender();
     d.addEventListener("toggle",function(){try{localStorage.setItem("blair_pvz_closed",d.open?"0":"1");}catch(e){}setTimeout(function(){try{render();}catch(x){}},0);});})();
   function jump(q){var cs=cols();PD.ci=Math.max(0,Math.min(cs.length-1,q));PD.follow=true;render();try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
   function lanesApply(){fillHere();render();}
-  document.getElementById("scon").onclick=function(){bandRows().forEach(function(r){PD.ln[r]=1;});lanesApply();};
-  document.getElementById("scoff").onclick=function(){PD.ln={};lanesApply();};
-  document.getElementById("scsame").onclick=function(){var cs=cols();if(PD.ci<1)return;var pc=cs[PD.ci-1],v=tool===1?2:1;PD.ln={};rowsAt(pc).forEach(function(x){if(x[1]>=0&&sel[cur][x[1]]===v)PD.ln[x[0]]=1;});lanesApply();};
+  (function(){var m=document.getElementById("scmode"),f=document.getElementById("scfoc"),om=document.getElementById("fcyc"),of=document.getElementById("ffoc");
+    function sy(){m.textContent=om.textContent;m.className=om.className;f.textContent=of.textContent;f.className=of.className;}
+    m.onclick=function(e){e.stopPropagation();om.click();sy();};f.onclick=function(e){e.stopPropagation();of.click();sy();};
+    try{var mo=new MutationObserver(sy);mo.observe(om,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});mo.observe(of,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});}catch(e){}sy();})();
   /* ---- row full popup ---- */
   var RF={open:{},local:0};
   var pu0=pushUndo;pushUndo=function(){RF.local=Date.now();return pu0.apply(this,arguments);};
