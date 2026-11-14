@@ -228,9 +228,9 @@ button{min-height:40px;touch-action:manipulation}
   .tbtn #coll{flex:0 0 32px}
   .tstat .kp b{font-size:19px!important}
 }
-#dash{position:fixed;left:0;right:0;top:0;bottom:0;z-index:90;overflow:auto;-webkit-overflow-scrolling:touch;display:none;font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);--bg:#f1f3f6;--card:#fff;--ink:#16202a;--mut:#5d6b78;--line:#dfe4ea;--acc:#2f7d32;--accbg:#e4f2e5;--warn:#8a5a00;--warnbg:#fff1d6;--blue:#1f5fbf;--e0:#dde3ea;--e1:#eceff3;--blk:#9aa3ad}
+#dash{position:fixed;left:0;right:0;top:0;bottom:0;z-index:90;overflow:auto;-webkit-overflow-scrolling:touch;display:none;font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);--bg:#f1f3f6;--card:#fff;--ink:#16202a;--mut:#5d6b78;--line:#dfe4ea;--acc:#1d4ed8;--accbg:#dbeafe;--warn:#8a5a00;--warnbg:#fff1d6;--blue:#1f5fbf;--e0:#dde3ea;--e1:#eceff3;--blk:#9aa3ad}
 #dash.open{display:block}
-@media (prefers-color-scheme:dark){#dash{--bg:#10161c;--card:#19212a;--ink:#e8eef4;--mut:#9aa8b6;--line:#2a3541;--acc:#6fcf74;--accbg:#1c3a20;--warn:#f0b050;--warnbg:#3a2c10;--blue:#7fb2ff;--e0:#2b3642;--e1:#232d38;--blk:#59636e}}
+@media (prefers-color-scheme:dark){#dash{--bg:#10161c;--card:#19212a;--ink:#e8eef4;--mut:#9aa8b6;--line:#2a3541;--acc:#60a5fa;--accbg:#1e3a5f;--warn:#f0b050;--warnbg:#3a2c10;--blue:#7fb2ff;--e0:#2b3642;--e1:#232d38;--blk:#59636e}}
 #dash button{min-height:46px}
 
 #dsin{max-width:760px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
@@ -573,7 +573,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-220359";
+var APPV="2026-11-13-220824";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
