@@ -452,10 +452,8 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="rowsp" id="tlogp">
   <div class="tlh"><b>Timed log</b><span id="tlnext" class="pnote"></span><button id="tldone" type="button">Done</button></div>
   <div id="lunchbox" style="margin:8px 0 10px"><button id="lunchb" type="button"></button><div id="lunchn" class="pnote" style="margin-top:4px"></div></div>
-  <div class="pnote">Log times (used every day)</div>
   <div id="tltimes" style="margin:4px 0"></div>
   <div class="tlrow"><input id="tlnew" type="time" step="60"><button id="tladd">Add time</button></div>
-  <div class="pnote">A reminder shows across the top 1 minute before each time. Update the tally, then tap OK to log to record that time's count. The reminder stays up for 30 minutes after the time; after that it shows as missed here with a Log now button. Reminders only appear while this page is open and the screen is on.</div>
   <div class="tlrow"><label for="tldate" class="pnote">Show log for</label><select id="tldate"></select></div>
   <table class="plog" id="tltab"></table>
 </div>
@@ -502,7 +500,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-214029";
+var APPV="2026-11-13-214141";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
