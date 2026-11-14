@@ -573,7 +573,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-221136";
+var APPV="2026-11-14-052130";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2600,8 +2600,12 @@ function paintMaps(){
 }
 
 var logOpen=true,logDay="";
+function logRecs(){var out={},tl=(typeof TL!=="undefined"&&TL.logs)||{};
+  Object.keys(tl).forEach(function(d){out[d]={};Object.keys(tl[d]||{}).forEach(function(k){out[d][k]=tl[d][k];});});
+  ((typeof P!=="undefined"&&P.log)||[]).forEach(function(e){if(!e||!e.t)return;var dt=new Date(e.t),d=dkey(dt),hm=("0"+dt.getHours()).slice(-2)+":"+("0"+dt.getMinutes()).slice(-2);(out[d]=out[d]||{})[hm]={n:e.n,w:e.w,t:e.t};});
+  return out;}
 function logCard(){
-  var logs=(typeof TL!=="undefined"&&TL.logs)||{},today=dkey(new Date()),ds=Object.keys(logs);if(ds.indexOf(today)<0)ds.push(today);ds.sort().reverse();
+  var logs=logRecs(),today=dkey(new Date()),ds=Object.keys(logs);if(ds.indexOf(today)<0)ds.push(today);ds.sort().reverse();
   if(!logDay||ds.indexOf(logDay)<0)logDay=today;
   var rec=logs[logDay]||{},keys=Object.keys(rec),now=Date.now(),isToday=logDay===today;
   if(isToday)((TL&&TL.times)||[]).forEach(function(hm){if(keys.indexOf(hm)<0)keys.push(hm);});keys.sort();
@@ -2614,7 +2618,7 @@ function logCard(){
   t+='</table>';
   var opt=ds.map(function(k){var p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]);return '<option value="'+k+'"'+(k===logDay?' selected':'')+'>'+(k===today?'Today, ':'')+dt.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})+'</option>';}).join("");
   return '<div class="card"><details id="dslogd"'+(logOpen?' open':'')+'><summary><span>Log</span><small>'+n+' logged'+(isToday?' today':'')+'</small></summary><div style="margin-top:10px"><select id="dslogsel">'+opt+'</select>'+t+'</div></details></div>';}
-function lastLog(){try{var logs=(typeof TL!=="undefined"&&TL.logs)||{},rec=logs[dkey(new Date())]||{},ks=Object.keys(rec).sort();if(!ks.length)return'';
+function lastLog(){try{var logs=logRecs(),rec=logs[dkey(new Date())]||{},ks=Object.keys(rec).sort();if(!ks.length)return'';
   var k=ks[ks.length-1],e=rec[k],p=ks.length>1?rec[ks[ks.length-2]]:null;
   return '<div class="prog" style="margin-top:10px"><span>Last log '+esc(fmtHM(k))+'</span><b>'+f(e.n)+' cars'+(p?' ('+(e.n-p.n>=0?'+':'')+(e.n-p.n)+')':'')+'</b></div>';}catch(x){return'';}}
 function draw(){
