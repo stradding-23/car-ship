@@ -405,6 +405,7 @@ body.pv #spball{height:42px!important}body.pv #spball .knob{width:36px!important
 body.pv #spad.on{gap:5px!important;padding:2px 12px 8px!important}
 body.pv #pvzc .zc{height:18px}body.pv #pvz{padding:6px 8px 8px}body.pv #pvrow summary{min-height:34px}body.pv #pvz summary{min-height:24px}
 body.pv #spad{bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
+.rfnr{display:flex;gap:8px}.rfnr .rfn{flex:1 1 0;min-width:0;font-size:18px}.rfn.rfp{background:#fff;color:#1d4ed8;border:2px solid #2563eb;box-shadow:none}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -511,14 +512,14 @@ body.pv #spad{bottom:calc(8px + env(safe-area-inset-bottom,0px))!important}
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
 <div id="pv"><details id="pvrow"><summary><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg><span id="pvrt" style="flex:1 1 auto"></span><span id="pvrs"></span></summary><div id="pvmini"></div></details><details id="pvz" open><summary class="pvzh"><span class="pvzt"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>CLOSE-UP</span><span id="pvzr"></span></summary><div id="pvzc"></div></details></div>
-<div id="rfull" role="dialog" aria-modal="true" aria-labelledby="rft"><div class="rfc"><div class="rfi"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2f7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div><div><div id="rft" class="rft"></div><div id="rfs" class="rfs"></div></div><div id="rfg" class="rfg"></div><button id="rfnext" class="rfn"></button><button id="rfstay" class="rfst">Stay on this row</button></div></div>
+<div id="rfull" role="dialog" aria-modal="true" aria-labelledby="rft"><div class="rfc"><div class="rfi"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2f7d32" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div><div><div id="rft" class="rft"></div><div id="rfs" class="rfs"></div></div><div id="rfg" class="rfg"></div><div class="rfnr"><button id="rfprev" class="rfn rfp"></button><button id="rfnext" class="rfn"></button></div><button id="rfstay" class="rfst">Stay on this row</button></div></div>
 <div id="fab"><div id="fmodes"><button id="fcyc" class="m0">Cars</button><button id="ffoc" class="foc">1 row</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
 <div id="gate" class="open"><div class="gc"><h2>Blair / P7 / EB1 Car Ship</h2><p>Enter the password to open the counter.</p><input id="gpw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password" enterkeyhint="go"><div class="er" id="ger"></div><button id="gopen">Open counter</button><div class="or">No password?</div><button class="alt" id="gview">Supercargo view</button></div></div>
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-215314";
+var APPV="2026-11-13-215550";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2795,6 +2796,9 @@ jobsRender();
     var shiftCpm=(P.start&&TOT>0)?TOT/Math.max(1,(now-P.start)/60000):null,cmp=(cpm&&shiftCpm&&mins>=3)?Math.round((cpm/shiftCpm-1)*100):null;
     var l=fList(),done=l.filter(function(x){return fStats(x[0],x[1]).open<=0;}).length,q=fIdx(),nx=null;
     for(var d=1;d<=l.length;d++){var y=l[(q+d)%l.length];if(fStats(y[0],y[1]).open>0){nx=y;break;}}
+    var pv2=null;for(var d2=1;d2<l.length;d2++){var y2=l[(q-d2+l.length*2)%l.length];if(fStats(y2[0],y2[1]).open>0){pv2=y2;break;}}if(!pv2&&l.length>1)pv2=l[(q-1+l.length)%l.length];
+    var pb=document.getElementById("rfprev");function rn(x){return "Row "+bands[x[0]][x[1]].name+(x[0]!==cur?" ("+LN(LOTS[x[0]].name)+")":"");}
+    if(pv2&&!(nx&&pv2[0]===nx[0]&&pv2[1]===nx[1])){pb.style.display="";pb.textContent="‹  "+rn(pv2);pb.onclick=function(){rfClose();focusGo(pv2[0],pv2[1]);};}else pb.style.display="none";
     document.getElementById("rft").textContent="Row "+b.name+" full";
     document.getElementById("rfs").textContent=st.c.toLocaleString()+" cars · full at "+new Date(now).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+(mins?" · "+mins+" min":"");
     document.getElementById("rfg").innerHTML='<div><b>'+(cpm?cpm.toFixed(1):"–")+'</b><small>cars/min</small></div><div><b>'+(cmp===null?"–":Math.abs(cmp)+"%")+'</b><small>'+(cmp===null?"vs shift pace":(cmp>=0?"faster than shift":"slower than shift"))+'</small></div><div><b>'+done+" of "+l.length+'</b><small>rows done</small></div>';
