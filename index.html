@@ -635,7 +635,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-085229";
+var APPV="2026-11-14-085720";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -2122,7 +2122,15 @@ function xoutNum(i,cs,c){var L=LOTS[i];if(L.cn&&L.cn[c]!=null)return L.cn[c];ret
 function xoutPlan(n,fromEnd,si){var fl=fList(),out=[],ord=[];if(si==null||si<0||si>=fl.length)si=fl.length-1;
   for(var q=si;q>=0;q--)ord.push(q);for(q=si+1;q<fl.length;q++)ord.push(q);
   for(var t=0;t<ord.length&&out.length<n;t++){var i=fl[ord[t]][0],j=fl[ord[t]][1],o=xoutCols(i,j),cs=o.cs.slice();if(fromEnd)cs.reverse();
-    for(var a=0;a<cs.length&&out.length<n;a++){var ks=o.m[cs[a]].slice().sort(function(x,y){return SP[i][y][0]-SP[i][x][0];});for(var b=0;b<ks.length&&out.length<n;b++)if(sel[i][ks[b]]===0)out.push([i,ks[b]]);}}return out;}
+    var md=xoMode(i,j);
+    if(md==="lanes"){var lr={};cs.forEach(function(c){o.m[c].forEach(function(k){lr[SP[i][k][0]]=1;});});var lanes=Object.keys(lr).map(Number).sort(function(x,y){return y-x;});
+      for(var li=0;li<lanes.length&&out.length<n;li++)for(var a2=0;a2<cs.length&&out.length<n;a2++){var kk=o.m[cs[a2]].filter(function(k){return SP[i][k][0]===lanes[li];})[0];if(kk!=null&&sel[i][kk]===0)out.push([i,kk]);}
+      continue;}
+    for(var a=0;a<cs.length&&out.length<n;a++){var ks=o.m[cs[a]].slice().sort(md==="top"?function(x,y){return SP[i][x][0]-SP[i][y][0];}:function(x,y){return SP[i][y][0]-SP[i][x][0];});for(var b=0;b<ks.length&&out.length<n;b++)if(sel[i][ks[b]]===0)out.push([i,ks[b]]);}}return out;}
+/* How each row fills, for auto X-out. "bottom": columns, gate at the bottom so the bottom lane fills last (X it first).
+   "top": columns, filled bottom to top so the top lane fills last. "lanes": filled lane by lane, left to right, top to bottom. */
+var XORD={A:{"*":"top",A:"lanes"}};
+function xoMode(i,j){var L=XORD[LOTS[i].name];if(!L)return "bottom";var nm=String(bands[i][j].name);return L[nm]||L["*"]||"bottom";}
 var XPK="blair_xpref_v1";function xpGet(){try{return JSON.parse(localStorage.getItem(XPK)||"null");}catch(e){return null;}}
 function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fList();if(!fl.length)return;
   var pref=xpGet(),si=fl.length-1,end=null;
