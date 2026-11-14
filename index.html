@@ -353,7 +353,7 @@ body.pv #spad{left:10px;right:10px;transform:none;bottom:calc(14px + env(safe-ar
 body.pv #spnum,body.pv #spball{width:100%}
 #spmid{display:flex;gap:10px;align-items:center;justify-content:center}
 #spsc{display:none;flex-direction:column;gap:6px}#spsc button{min-width:84px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);font:700 13px system-ui,sans-serif;color:var(--ink);margin:0}
-#spsc button.m0{color:#2f5d1c}#spsc button.m1{color:#b42318}#spsc button.m2{color:#8a5a00}#spsc button.act{color:#1d4ed8}body.pv #fab{display:none!important}#spsc button{min-width:96px;min-height:52px;font-size:15px}
+#spsc button.m0{color:#2f5d1c}#spsc button.m1{color:#b42318}#spsc button.m2{color:#8a5a00}#spsc button.act{color:#1d4ed8}body.pv #fab{display:none!important}#spsc button{min-width:96px;min-height:46px!important;font-size:15px}
 body.pv #spsc{display:flex}#spad.ed #spsc{display:none}
 body.pv.padon #fab{right:10px;bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 #fmodes{border:0!important;box-shadow:none!important;background:transparent!important;gap:6px;overflow:visible!important;border-radius:0!important}
@@ -386,7 +386,8 @@ body.pv{background:var(--aisle)}body.pv .fbar.on{margin:8px 10px 0;padding:6px;b
 body.pv .fbar button{border-radius:12px!important;border:1px solid var(--line);background:var(--card);box-shadow:0 1px 3px rgba(15,23,42,.08)}
 body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!important;font-size:32px!important;font-weight:700}body.pv .fbar #fnext.go{min-width:96px;font-size:18px!important}body.pv .fbar #fall{min-height:58px!important}body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
 #spsc #sclog{color:#fff;background:#2f7d32;border-color:#2f7d32;font-weight:800}#spsc #sclog.flash{background:#1f5fbf;border-color:#1f5fbf}
-#lunchb{width:100%;min-height:52px;border-radius:14px;border:1px solid #c2410c;background:#fff7ed;color:#9a3412;font:800 17px system-ui,sans-serif;margin:0}#lunchb.on{background:#2f7d32;border-color:#2f7d32;color:#fff}
+#lunchbox{display:none}#lunchb{width:100%;min-height:52px;border-radius:14px;border:1px solid #c2410c;background:#fff7ed;color:#9a3412;font:800 17px system-ui,sans-serif;margin:0}#lunchb.on{background:#2f7d32;border-color:#2f7d32;color:#fff}
+#spsc #sclunch{color:#9a3412;border-color:#c2410c;background:#fff7ed;font-weight:800}#spsc #sclunch.on{color:#fff;background:#2f7d32;border-color:#2f7d32;font-size:13px}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -500,7 +501,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-214141";
+var APPV="2026-11-13-214410";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -1114,6 +1115,7 @@ function pzUI(){var on=pzActive(),st=!!P.start,b=document.getElementById("pzb"),
 /* ---- going to lunch: day shift = paused until 1:00 PM (auto back to work); night shift = paused until tapped back ---- */
 function lunchDay(n){var h=new Date(n).getHours();return h>=5&&h<17;}
 function lunchUI(){var b=document.getElementById("lunchb"),t=document.getElementById("lunchn");if(!b)return;var n=Date.now(),c=pzCur(),lu=c&&c.w==="lunch";
+  var sb=document.getElementById("sclunch");if(sb){sb.textContent=lu?"Back to work":"Lunch";sb.classList.toggle("on",!!lu);sb.title=lu?(c.e?"Back at "+fmtT(c.e):"Tap when work starts again"):(lunchDay(n)&&new Date(n).getHours()<13?"Until 1:00 PM":"Until you tap back");}
   if(lu){b.textContent="Back from lunch";b.classList.add("on");t.textContent="At lunch since "+fmtT(c.s)+(c.e?". Work starts again by itself at "+fmtT(c.e)+".":". Tap when work starts again.");}
   else{var d=new Date(n),one=new Date(d.getFullYear(),d.getMonth(),d.getDate(),13,0,0,0).getTime(),day=lunchDay(n)&&n<one;
     b.textContent=day?"Going to lunch (until 1:00 PM)":"Going to lunch";b.classList.remove("on");
@@ -2695,7 +2697,7 @@ jobsRender();
 /* ===== Spot picker (1 row view): big boxes for one spot number, round swipe pad to move along the row ===== */
 (function(){
   var PD={ci:-1,key:"",ln:{}},box=document.createElement("div"),hl=document.createElement("div");
-  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Timed log</button></div><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button><button id="sclog">Log</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
+  box.id="spad";box.innerHTML='<div id="spgrip" role="button" aria-label="Drag to move the picker. Double-tap to put it back."><span></span></div><div id="spnum"></div><div id="spmid"><div id="spx"><button data-p="rowsb">Rows</button><button data-p="dashb">Supercargo</button><button data-p="bossb">QR</button><button data-p="tlb">Timed log</button></div><div id="spcol"></div><div id="spsc"><button id="scmode">Cars</button><button id="scfoc">All rows</button><button id="sclog">Log</button><button id="sclunch">Lunch</button></div></div><div id="spball" role="button" aria-label="Swipe left or right to move along the row; the boxes that are on get a car at each spot. Tap to go to the next spot."><i class="chv l">&#10094;&#10094;</i><span class="knob"></span><i class="chv r">&#10095;&#10095;</i></div>';
   document.body.appendChild(box);hl.id="sphl";document.getElementById("wrap").appendChild(hl);
   function on(){return !!(FOC&&fOn(cur)&&tool<=2&&!document.getElementById("ov").classList.contains("open"));}
   function band(){var j=fJ(cur);return j<0?null:bands[cur][j];}
@@ -2760,6 +2762,7 @@ jobsRender();
   function lanesApply(){fillHere();render();}
   (function(){var m=document.getElementById("scmode"),f=document.getElementById("scfoc"),om=document.getElementById("fcyc"),of=document.getElementById("ffoc");
     function sy(){m.textContent=om.textContent;m.className=om.className;f.textContent=of.textContent;f.className=of.className;}
+    document.getElementById("sclunch").onclick=function(e){e.stopPropagation();lunchGo();};try{lunchUI();}catch(x){}
     var lg=document.getElementById("sclog"),ol=document.getElementById("logb");function syl(){lg.textContent=ol.textContent;lg.classList.toggle("flash",ol.classList.contains("flash"));}
     lg.onclick=function(e){e.stopPropagation();ol.click();syl();};try{new MutationObserver(syl).observe(ol,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});}catch(e){}syl();
     m.onclick=function(e){e.stopPropagation();om.click();sy();};f.onclick=function(e){e.stopPropagation();of.click();sy();};
