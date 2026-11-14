@@ -313,7 +313,7 @@ body.padon #fab{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bottom,
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
-#fmodes button{min-height:40px;margin:0;border:0;border-radius:0;border-top:1px solid #cfd8c8;background:#fff;color:#2f5d1c;font:700 15px/1 system-ui,sans-serif}#fmodes button:first-child{border-top:0}#fmodes button.on{background:#2f5d1c;color:#fff}#fmodes button.foc{background:#e8f0e3;border-top:2px solid #2f5d1c}#fmodes button.foc.act{background:#1f5fbf;color:#fff}
+#fmodes button{min-height:40px;margin:0;border:0;border-radius:0;border-top:1px solid #cfd8c8;background:#fff;color:#2f5d1c;font:700 15px/1 system-ui,sans-serif}#fmodes button:first-child{border-top:0}#fmodes button.on{background:#2f5d1c;color:#fff}#fmodes #fcyc{min-height:52px;font-size:17px;font-weight:800;color:#fff}#fcyc.m0{background:#2f5d1c}#fcyc.m1{background:#8a2b2b}#fcyc.m2{background:#8a5a00}#fmodes button.foc{background:#e8f0e3;border-top:2px solid #2f5d1c}#fmodes button.foc.act{background:#1f5fbf;color:#fff}
 #brushf{min-width:116px;min-height:58px;padding:6px 14px;border-radius:30px;z-index:45;border:2px solid #c9a227;background:#ffe08a;color:#3a2c00;font:800 18px/1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 @media (min-width:0px),(orientation:landscape) and (max-height:520px){#fab{display:flex}.tools #brush{display:none!important}#mode2,#mode,.tbtn #fbtn{display:none!important}}
 .zst{display:inline-flex;gap:5px;align-items:center}
@@ -416,13 +416,13 @@ body.padon #fab{right:10px;bottom:calc(19vh + 92px + env(safe-area-inset-bottom,
   <div id="jobsec" style="margin-top:12px"></div>
 </div>
 <div id="wrap"><canvas id="cv"></canvas></div>
-<div id="fab"><div id="fmodes"><button data-t="0">Cars</button><button data-t="1">X out</button><button data-t="2">Edit</button><button id="ffoc" class="foc">1 row</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
+<div id="fab"><div id="fmodes"><button id="fcyc" class="m0">Cars</button><button id="ffoc" class="foc">1 row</button></div><button id="brushf" aria-label="Brush size" style="display:none!important">Brush 1</button></div>
 <div id="dash"><div id="dsin"><button class="rf" id="dsrefresh">Refresh</button><div class="msg" id="dsmsg" style="text-align:center;margin:-4px 0 10px"></div><div id="dsbody"></div><p class="foot" id="dsupd"></p><button class="bk" id="dsback">Back</button></div></div>
 <div id="gate" class="open"><div class="gc"><h2>Blair / P7 / EB1 Car Ship</h2><p>Enter the password to open the counter.</p><input id="gpw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password" enterkeyhint="go"><div class="er" id="ger"></div><button id="gopen">Open counter</button><div class="or">No password?</div><button class="alt" id="gview">Supercargo view</button></div></div>
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-204011";
+var APPV="2026-11-13-204422";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -910,9 +910,9 @@ function setMode(){
   mb.classList.toggle("act",tool<3);document.getElementById("mode2").classList.toggle("act",tool<3);
   cv.style.touchAction="none";setCursor();
   document.getElementById("editbar").classList.toggle("open",tool===2);
-  document.querySelectorAll("#fmodes button[data-t]").forEach(function(b){b.classList.toggle("on",+b.getAttribute("data-t")===tool);});
+  var fc=document.getElementById("fcyc");if(fc){fc.textContent=["Cars","X out","Edit"][tool]||"Cars";fc.className="m"+(tool<3?tool:0);}
 }
-document.querySelectorAll("#fmodes button[data-t]").forEach(function(b){b.onclick=function(e){e.stopPropagation();tool=+b.getAttribute("data-t");setMode();draw();};});
+document.getElementById("fcyc").onclick=function(e){e.stopPropagation();cycleMode();};
 (function(){var o=document.getElementById("fbtn"),f=document.getElementById("ffoc");function sy(){f.textContent=o.textContent;f.classList.toggle("act",o.classList.contains("act"));}
   f.onclick=function(e){e.stopPropagation();o.click();sy();};try{new MutationObserver(sy).observe(o,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:["class"]});}catch(e){}sy();})();
 function cycleMode(){tool=(tool+1)%3;setMode();draw();}
