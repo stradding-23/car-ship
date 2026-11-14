@@ -635,7 +635,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-084405";
+var APPV="2026-11-14-085229";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -2641,11 +2641,11 @@ function qrSheet(){var K="blair_qr_v1",cfg={a:"https://stradding-23.github.io/ca
     '<div id="qrbox" style="text-align:center"></div><div class="nt" id="qrlink" style="word-break:break-all;text-align:center"></div>'+
     '<label for="qradr">Page address</label><input id="qradr" type="url" inputmode="url" value="'+esc(cfg.a)+'">'+
     '<div class="btns" style="flex-wrap:wrap"><button id="qrno">Close</button><button id="qrlock">Lock</button><button id="qrcp" class="pri">Copy link</button></div>');
-  function link(){var a=sh.querySelector("#qradr").value.trim().split("#")[0];return a+(cfg.m==="s"?"#supercargo":"");}
+  var XP=Date.now()+12*3600000;function link(){var a=sh.querySelector("#qradr").value.trim().split("#")[0];return a+(cfg.m==="s"?"#supercargo&x="+XP:"");}
   function render(){var l=link(),bx=sh.querySelector("#qrbox");bx.innerHTML="";
     sh.querySelector("#qrc").classList.toggle("on",cfg.m==="c");sh.querySelector("#qrs").classList.toggle("on",cfg.m==="s");
     try{localStorage.setItem(K,JSON.stringify({a:sh.querySelector("#qradr").value.trim(),m:cfg.m}));}catch(e){}
-    sh.querySelector("#qrlink").textContent=l;
+    sh.querySelector("#qrlink").textContent=cfg.m==="s"?"View only. Works until "+new Date(XP).toLocaleString([],{weekday:"short",hour:"numeric",minute:"2-digit"})+" (12 hours).":l;
     if(!/^https?:\/\//i.test(l)){bx.textContent="Enter the page address, starting with https://";return;}
     var c=qrCanvas(l,300);if(!c){bx.textContent="That address is too long for a QR code.";return;}
     var im=new Image();im.src=c.toDataURL("image/png");im.alt="QR code";im.style.cssText="width:min(300px,80vw);height:auto;image-rendering:pixelated;border:1px solid #ccd;border-radius:8px";bx.appendChild(im);}
@@ -2822,11 +2822,14 @@ document.getElementById("gview").onclick=function(){gOpen();DASH.open();};
 document.getElementById("dsback").onclick=function(){DASH.close();if(!GUN)gShow();};
 document.getElementById("dashb").onclick=function(){DASH.open();};
 if(GUN)gOpen();
-var GHID=0,GSUP=/supercargo/i.test(location.hash+location.search);
+var GHID=0,GSX=(function(){var m=/[#&?]x=(\d{10,})/.exec(location.hash+location.search);return m?+m[1]:0;})(),GSUP=/supercargo/i.test(location.hash+location.search)&&GSX>Date.now();
+var GSOLD=/supercargo/i.test(location.hash+location.search)&&!GSUP;
+function gExpired(){GSUP=false;try{DASH.close();}catch(e){}GUN=false;gShow();document.getElementById("ger").textContent="This Supercargo link has expired. Ask for a new QR code.";}
+setInterval(function(){if(GSUP&&GSX&&Date.now()>GSX)gExpired();},30000);
 document.addEventListener("visibilitychange",function(){if(document.hidden){GHID=Date.now();return;}
   if(GHID&&Date.now()-GHID>60000&&!GSUP){GUN=false;gShow();}GHID=0;});
 window.addEventListener("pageshow",function(e){if(e.persisted&&!GSUP){GUN=false;gShow();}});
-try{if(/supercargo/i.test(location.hash+location.search)){gOpen();DASH.open();}}catch(e){}
+try{if(GSUP){gOpen();DASH.open();}else if(GSOLD)setTimeout(gExpired,0);}catch(e){}
 
 /* ===== Block speeds: learn how long each block takes, compared with the rest of the same job =====
    At Finish job, every car parked during the job is put in time order. The working time since the previous car
