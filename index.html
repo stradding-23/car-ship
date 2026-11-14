@@ -384,7 +384,7 @@ body.pv #tlogp.open{position:fixed;inset:0;z-index:70;max-height:none!important;
 body.pv #tlogp.open #tldone{display:inline-block}body.pv #tlogp .tlh{display:flex;align-items:center;gap:8px}
 body.pv{background:var(--aisle)}body.pv .fbar.on{margin:8px 10px 0;padding:6px;border:0;border-radius:16px;background:var(--card);box-shadow:0 2px 8px rgba(15,23,42,.08)}
 body.pv .fbar button{border-radius:12px!important;border:1px solid var(--line);background:var(--card);box-shadow:0 1px 3px rgba(15,23,42,.08)}
-body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!important;font-size:32px!important;font-weight:700}body.pv .fbar #fnext.go{min-width:96px;font-size:18px!important}body.pv .fbar #fall{min-height:58px!important}body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
+body.pv .fbar.on{padding:4px!important}body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:44px!important;height:44px;font-size:28px!important;font-weight:700;padding:0 8px!important}body.pv .fbar #fnext.go{min-width:96px;font-size:17px!important}body.pv .fbar #fall{min-height:44px!important;height:44px;padding:0 10px!important}body.pv .fbar #fname{min-height:44px!important;height:44px;flex-direction:row!important;align-items:center!important;gap:8px!important;padding:0 10px!important;white-space:nowrap;overflow:hidden}body.pv .fbar #fname b{font-size:20px!important}body.pv .fbar #fname span{display:none}body.pv .fbar #fname small{font-size:14px!important}body.pv .fbar #fnext.go{background:var(--grand);border-color:var(--grand)}
 #spsc #sclog{color:#fff;background:#2f7d32;border-color:#2f7d32;font-weight:800}#spsc #sclog.flash{background:#1f5fbf;border-color:#1f5fbf}
 #lunchbox{display:none}#lunchb{width:100%;min-height:52px;border-radius:14px;border:1px solid #c2410c;background:#fff7ed;color:#9a3412;font:800 17px system-ui,sans-serif;margin:0}#lunchb.on{background:#2f7d32;border-color:#2f7d32;color:#fff}
 #spsc #sclunch{color:#9a3412;border-color:#c2410c;background:#fff7ed;font-weight:800}#spsc #sclunch.on{color:#fff;background:#2f7d32;border-color:#2f7d32;font-size:13px}
@@ -504,7 +504,7 @@ body.pv #spx button,body.pv #spsc button{width:104px!important;min-width:104px!i
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-214628";
+var APPV="2026-11-13-214857";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
