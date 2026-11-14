@@ -502,7 +502,7 @@ body.pv .fbar #fprev,body.pv .fbar #fnext{min-width:68px;min-height:58px!importa
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-213739";
+var APPV="2026-11-13-214029";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -1119,7 +1119,7 @@ function lunchUI(){var b=document.getElementById("lunchb"),t=document.getElement
   if(lu){b.textContent="Back from lunch";b.classList.add("on");t.textContent="At lunch since "+fmtT(c.s)+(c.e?". Work starts again by itself at "+fmtT(c.e)+".":". Tap when work starts again.");}
   else{var d=new Date(n),one=new Date(d.getFullYear(),d.getMonth(),d.getDate(),13,0,0,0).getTime(),day=lunchDay(n)&&n<one;
     b.textContent=day?"Going to lunch (until 1:00 PM)":"Going to lunch";b.classList.remove("on");
-    t.textContent=day?"Stops the clock now. Rates and the finish time skip lunch, and work starts again at 1:00 PM by itself.":"Night shift: stops the clock now. Tap Back from lunch when work starts again.";}}
+    t.textContent="";}}
 function lunchGo(){var n=Date.now(),c=pzCur();
   if(c&&c.w==="lunch"){c.e=n;}
   else{if(pzActive())P.pauses.forEach(function(q){if(!q.e||q.e>n)q.e=n;});var d=new Date(n),one=new Date(d.getFullYear(),d.getMonth(),d.getDate(),13,0,0,0).getTime(),q={s:n,w:"lunch"};if(lunchDay(n)&&n<one)q.e=one;P.pauses.push(q);}
