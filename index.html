@@ -466,6 +466,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 .whc{height:220px;width:74px;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center;position:relative;z-index:2;-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
 .whc::-webkit-scrollbar{display:none}.whi{height:44px;line-height:44px;font-size:26px;font-weight:700;scroll-snap-align:center;color:var(--ink)}.whp{height:88px}
 .whs{font-size:26px;font-weight:800;z-index:2}.whbar{position:absolute;left:8%;right:8%;top:88px;height:44px;border-radius:12px;background:rgba(37,99,235,.10);border:1px solid rgba(37,99,235,.35);z-index:1;pointer-events:none}
+.ov.mid{align-items:center!important}.ov.mid .sheet{border-radius:14px;margin:0 10px;width:calc(100% - 20px)}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -579,7 +580,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-074935";
+var APPV="2026-11-14-075239";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1211,7 +1212,7 @@ function lunchAsk(){var c=pzCur();if(c&&c.w==="lunch"){lunchGo();return;}
   var n=new Date(),d0=new Date(n.getFullYear(),n.getMonth(),n.getDate(),13,0,0,0),def=(lunchDay(n.getTime())&&n<d0)?d0:new Date(Math.ceil((n.getTime()+3600000)/300000)*300000);
   var H=[],M=[],A=["AM","PM"];for(var i=1;i<=12;i++)H.push(String(i));for(var m=0;m<60;m+=5)M.push(("0"+m).slice(-2));
   function col(id,arr){return '<div class="whc" id="'+id+'" tabindex="0" role="listbox" aria-label="'+id+'"><div class="whp"></div>'+arr.map(function(x){return '<div class="whi">'+x+'</div>';}).join("")+'<div class="whp"></div></div>';}
-  var sh=ov('<h3>When is lunch over?</h3><div class="wh">'+col("wH",H)+'<div class="whs">:</div>'+col("wM",M)+col("wA",A)+'<div class="whbar"></div></div><div class="btns"><button id="wgo" class="pri">Start lunch</button><button id="wno">Cancel</button></div>');
+  var sh=ov('<h3>When is lunch over?</h3><div class="wh">'+col("wH",H)+'<div class="whs">:</div>'+col("wM",M)+col("wA",A)+'<div class="whbar"></div></div><div class="btns"><button id="wgo" class="pri">Start lunch</button><button id="wno">Cancel</button></div>');document.getElementById("ov").classList.add("mid");
   var hh=def.getHours(),h12=hh%12||12,mm=Math.round(def.getMinutes()/5)%12,ap=hh>=12?1:0;
   function setc(id,idx){var e=sh.querySelector("#"+id);e.scrollTop=idx*44;}
   function getc(id){var e=sh.querySelector("#"+id);return Math.round(e.scrollTop/44);}
@@ -1358,7 +1359,7 @@ function doNew(){
   P={target:null,start:null,log:[],pauses:[],conds:[],drivers:P.drivers};psave();document.getElementById("ptarget").value="";plogRender();paceUpdate();fcRender();}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function ov(html){var o=document.getElementById("ov"),sh=document.getElementById("sheet");sh.innerHTML=html;o.classList.add("open");return sh;}
-function ovClose(){document.getElementById("ov").classList.remove("open");}
+function ovClose(){document.getElementById("ov").classList.remove("open","mid");}
 (function(){var o=document.getElementById("brush"),f=document.getElementById("brushf");function sy(){f.textContent=o.textContent;}
   f.onclick=function(e){e.stopPropagation();o.click();sy();};try{new MutationObserver(sy).observe(o,{childList:true,characterData:true,subtree:true});}catch(e){}sy();})();
 document.getElementById("moreb").onclick=function(){
