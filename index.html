@@ -112,6 +112,7 @@ button{min-height:40px;touch-action:manipulation}
 .xmini{flex:1;display:grid;gap:1px}.xmini .mc{background:#dde3ea;border-radius:1px}.xmini .mc.car{background:#1d4ed8}.xmini .mc.blk{background:#9aa3ad}.xmini .mc.none{background:transparent}
 .xbar[data-e="a"] .xmini .mc.pa,.xbar[data-e="z"] .xmini .mc.pz{background:repeating-linear-gradient(45deg,#ef4444 0 3px,#fca5a5 3px 6px)}
 .dkg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.dkb{min-height:60px;font:inherit;font-size:24px;font-weight:800;border:0;border-radius:14px;background:#dbeafe;color:#1d4ed8}
+.xsg{display:block;font-size:12px;font-weight:700;opacity:.85;margin-top:2px}
 .xends{display:flex;gap:10px}.xend{flex:1;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;line-height:1.2;text-align:center}.xend b{font-size:18px}.xar{font-size:26px;line-height:1}
 #capx{white-space:nowrap;margin-left:8px;font:inherit;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#1d4ed8;min-height:28px;vertical-align:middle}#capbar.ok{background:#1f7a3a;color:#fff}#capbar.low{background:#fff2cc;color:#5a4300}
 #captoast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:60;background:#1f7a3a;color:#fff;padding:14px 18px;border-radius:12px;font-size:17px;font-weight:700;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:86vw}#captoast.on{display:block}
@@ -635,7 +636,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-085720";
+var APPV="2026-11-14-085820";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -2128,8 +2129,9 @@ function xoutPlan(n,fromEnd,si){var fl=fList(),out=[],ord=[];if(si==null||si<0||
       continue;}
     for(var a=0;a<cs.length&&out.length<n;a++){var ks=o.m[cs[a]].slice().sort(md==="top"?function(x,y){return SP[i][x][0]-SP[i][y][0];}:function(x,y){return SP[i][y][0]-SP[i][x][0];});for(var b=0;b<ks.length&&out.length<n;b++)if(sel[i][ks[b]]===0)out.push([i,ks[b]]);}}return out;}
 /* How each row fills, for auto X-out. "bottom": columns, gate at the bottom so the bottom lane fills last (X it first).
-   "top": columns, filled bottom to top so the top lane fills last. "lanes": filled lane by lane, left to right, top to bottom. */
-var XORD={A:{"*":"top",A:"lanes"}};
+   "top": columns, filled bottom to top so the top lane fills last. "lanes": filled lane by lane, left to right, top to bottom. end: the end of the row that fills last ("a" = left/low spot numbers), suggested in the X out popup. */
+var XORD={A:{"*":"top",A:"lanes"},B:{"*":"top",end:"a"}};
+function xoEnd(i){var L=XORD[LOTS[i].name];return L&&L.end||null;}
 function xoMode(i,j){var L=XORD[LOTS[i].name];if(!L)return "bottom";var nm=String(bands[i][j].name);return L[nm]||L["*"]||"bottom";}
 var XPK="blair_xpref_v1";function xpGet(){try{return JSON.parse(localStorage.getItem(XPK)||"null");}catch(e){return null;}}
 function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fList();if(!fl.length)return;
@@ -2143,14 +2145,14 @@ function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fLis
   document.getElementById("ov").classList.add("mid");
   function upd(){sh.querySelectorAll(".xrc").forEach(function(b){b.classList.toggle("on",+b.dataset.q===si);});
     var i=fl[si][0],j=fl[si][1],cs=xoutCols(i,j).cs,a=xoutNum(i,cs,cs[0]),z=xoutNum(i,cs,cs[cs.length-1]),open=0;SP[i].forEach(function(sp,k){if(bandOf[i][k]===j&&sel[i][k]===0)open++;});
-    var same=pref&&si===q0;sh.querySelector("#xa").innerHTML='<span class="xar">\u25C0</span><span>Start at<br><b>spot '+esc(String(a))+'</b>'+(same&&end==="a"?" \u2605":"")+'</span>';
-    sh.querySelector("#xz").innerHTML='<span>Start at<br><b>spot '+esc(String(z))+'</b>'+(same&&end==="z"?" \u2605":"")+'</span><span class="xar">\u25B6</span>';
+    var same=pref&&si===q0,sg=xoEnd(i);sh.querySelector("#xa").innerHTML='<span class="xar">\u25C0</span><span>Start at<br><b>spot '+esc(String(a))+'</b>'+(same&&end==="a"?" \u2605":"")+(sg==="a"?'<small class="xsg">fills last</small>':"")+'</span>';
+    sh.querySelector("#xz").innerHTML='<span>Start at<br><b>spot '+esc(String(z))+'</b>'+(same&&end==="z"?" \u2605":"")+(sg==="z"?'<small class="xsg">fills last</small>':"")+'</span><span class="xar">\u25B6</span>';
     var br=[],rm={};SP[i].forEach(function(sp,k){if(bandOf[i][k]===j)rm[sp[0]]=1;});for(var r0 in rm)br.push(+r0);br.sort(function(x,y){return x-y;});
     var PA={},PZ={};xoutPlan(n,false,si).forEach(function(x){PA[x[0]+":"+x[1]]=1;});xoutPlan(n,true,si).forEach(function(x){PZ[x[0]+":"+x[1]]=1;});
     var nc=NC[i],gh="";br.forEach(function(r){cs.forEach(function(cc){var k=grid[i][r*nc+cc],ok=k>=0&&bandOf[i][k]===j,v=ok?sel[i][k]:-1,key=i+":"+k;
       gh+='<span class="mc'+(v<0?" none":v===1?" car":v===2?" blk":"")+(ok&&PA[key]?" pa":"")+(ok&&PZ[key]?" pz":"")+'"></span>';});});
     sh.querySelector("#xbar").innerHTML='<span class="xl">'+esc(String(a))+'</span><div class="xmini" style="grid-template-columns:repeat('+cs.length+',minmax(0,1fr));grid-template-rows:repeat('+br.length+',minmax(0,1fr));height:'+Math.max(24,Math.min(64,br.length*10))+'px">'+gh+'</div><span class="xl">'+esc(String(z))+'</span>';
-    sh.querySelector("#xbar").dataset.e=sel0||"";
+    sh.querySelector("#xbar").dataset.e=(same&&end)?end:(sg||sel0||"");
     sh.querySelector("#xnote").textContent=(open<n?"Row "+bands[i][j].name+" has only "+open+" open, so it continues into the next row over. ":"")+(pref&&q0>=0?"\u2605 = what you picked last time.":"");}
   var q0=pref&&end?si:-1;
   var sel0=end||"";
