@@ -460,6 +460,7 @@ body.pv #spx button[data-p="dashb"]{background:#e0f2fe!important;color:#075985!i
 body.pv #spx button[data-p="bossb"]{background:#eef2ff!important;color:#3730a3!important;border-color:#c7d2fe!important}
 body.pv #spx button[data-p="tlb"]{background:#f0f9ff!important;color:#0c4a6e!important;border-color:#bae6fd!important}
 body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!important}body.pv #spsc #scfoc{background:#e0e7ff!important;border-color:#c7d2fe!important;color:#3730a3!important}
+#spsc #sclog.off,body.pv #spsc #sclog.off{opacity:.55}
 #moreb{display:none}
 #fab{display:none;position:fixed;right:24vw;bottom:calc(16vh + env(safe-area-inset-bottom,0px));z-index:45;flex-direction:column;gap:8px;align-items:stretch}
 #fmodes{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;border:2px solid #2f5d1c;box-shadow:0 4px 14px rgba(0,0,0,.3);background:#fff}
@@ -573,7 +574,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-052130";
+var APPV="2026-11-14-073343";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2842,8 +2843,8 @@ jobsRender();
   (function(){var m=document.getElementById("scmode"),f=document.getElementById("scfoc"),om=document.getElementById("fcyc"),of=document.getElementById("ffoc");
     function sy(){m.textContent=om.textContent;m.className=om.className;f.textContent=of.textContent;f.className=of.className;}
     document.getElementById("sclunch").onclick=function(e){e.stopPropagation();lunchGo();};try{lunchUI();}catch(x){}
-    var lg=document.getElementById("sclog"),ol=document.getElementById("logb");function syl(){lg.textContent=ol.textContent;lg.classList.toggle("flash",ol.classList.contains("flash"));}
-    lg.onclick=function(e){e.stopPropagation();ol.click();syl();};try{new MutationObserver(syl).observe(ol,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});}catch(e){}syl();
+    var lg=document.getElementById("sclog"),ol=document.getElementById("logb");function syl(){var fl=ol.classList.contains("flash")&&/^Logged/.test(ol.textContent);lg.textContent=fl?ol.textContent:"Log";lg.classList.toggle("flash",fl);lg.classList.toggle("off",!P.start);}
+    lg.onclick=function(e){e.stopPropagation();if(!P.start){if(typeof shToast==="function")shToast("Tap Start at the top first.");return;}ol.click();syl();};setInterval(function(){try{syl();}catch(x){}},3000);try{new MutationObserver(syl).observe(ol,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["class"]});}catch(e){}syl();
     m.onclick=function(e){e.stopPropagation();om.click();sy();};f.onclick=function(e){e.stopPropagation();of.click();sy();};
     try{var mo=new MutationObserver(sy);mo.observe(om,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});mo.observe(of,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]});}catch(e){}sy();})();
   /* ---- row full popup ---- */
