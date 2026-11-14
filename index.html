@@ -414,7 +414,7 @@ body.padon #brushf{right:12px}
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-13-201220";
+var APPV="2026-11-13-201346";
 (function(){var hid=0;function chk(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;var u=new URL(location.href);if(u.searchParams.get("v")===m[1])return;u.searchParams.set("v",m[1]);location.replace(u.toString());}).catch(function(){});}catch(e){}}
   chk();document.addEventListener("visibilitychange",function(){if(document.hidden)hid=Date.now();else{if(hid&&Date.now()-hid>60000)chk();hid=0;}});})();
@@ -2612,7 +2612,7 @@ jobsRender();
     var n=Math.max(1,rs.length),avail=Math.max(160,(innerHeight*0.81-(wrap.getBoundingClientRect().top+90))*0.75),sz=Math.max(30,Math.min(62,Math.floor((avail-110)/n)-6));if(innerWidth>innerHeight&&innerHeight<520)sz=Math.max(30,Math.min(56,Math.floor(innerHeight*0.42/n)-6));
     box.style.setProperty("--sz",sz+"px");
     document.getElementById("spnum").innerHTML="<b>"+esc(String(spotNo(c)))+"</b><small>"+(PD.ci+1)+" of "+cs.length+"</small>";
-    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"'+(v<0?" disabled":"")+'>'+(on?"ON":v===2?"&times;":"")+'</button>';});
+    var h="";rs.forEach(function(x,q){var v=x[1]<0?-1:sel[cur][x[1]],on=!!PD.ln[x[0]];h+='<button class="spb'+(on?" sel":"")+(v===1?" car":v===2?" blk":v<0?" none":"")+'" data-q="'+q+'"'+(v<0?" disabled":"")+'></button>';});
     var col=document.getElementById("spcol");col.innerHTML=h;
     col.querySelectorAll(".spb").forEach(function(b){b.onclick=function(){var x=rs[+b.getAttribute("data-q")];if(!x)return;var r=x[0];if(PD.ln[r])delete PD.ln[r];else PD.ln[r]=1;
       if(PD.ln[r]&&x[1]>=0&&sel[cur][x[1]]===0)setK([x],tool===1?2:1);render();};});
