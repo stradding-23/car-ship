@@ -632,7 +632,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-083055";
+var APPV="2026-11-14-083308";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -1979,7 +1979,7 @@ function condLearn(){var now=Date.now(),key=Object.keys(JOBS||{}).length+"|"+(P.
   var jobs=[];for(var id in JOBS){var j=JOBS[id];if(j&&j.seg&&j.seg.length)jobs.push(j.seg);}
   if(P.start&&P.log&&P.log.length&&P.log.length>0)jobs.push(segsOf(P.log.concat([{t:now,n:TOT}])));
   var acc={},ids=cfIds();ids.forEach(function(i){acc[i]={w:0,s:0};});
-  jobs.forEach(function(sg){var ch=0,cn=0;sg.forEach(function(x){var tot=0;for(var k in x[2])tot+=x[2][k];if(tot<0.1&&x[0]>0.05){ch+=x[0];cn+=x[1];}});
+  jobs.forEach(function(sg){sg=(sg||[]).filter(function(x){return x&&x.length>=2;}).map(function(x){return [x[0],x[1],(x[2]&&typeof x[2]==="object")?x[2]:{}];});var ch=0,cn=0;sg.forEach(function(x){var tot=0;for(var k in x[2])tot+=x[2][k];if(tot<0.1&&x[0]>0.05){ch+=x[0];cn+=x[1];}});
     if(ch<0.4||cn<=0)return;var base=cn/ch;
     ids.forEach(function(i){var h=0,n=0;sg.forEach(function(x){var f=x[2][i]||0,oth=0;for(var k in x[2])if(k!==i)oth+=x[2][k];if(f>=0.6&&oth<0.25&&x[0]>0.05){h+=x[0];n+=x[1];}});
       if(h<0.15||n<=0)return;var ko=Math.max(1,Math.min(3,base/(n/h)));acc[i].w+=h;acc[i].s+=ko*h;});});
