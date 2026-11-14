@@ -61,6 +61,7 @@ canvas{touch-action:none}
 button{min-height:40px;touch-action:manipulation}
 .top{flex-wrap:wrap;row-gap:2px}
 #capbar{display:none;padding:5px 10px;font-size:14px;font-weight:600;text-align:center}#capbar.on{display:block}
+.xrw{display:flex;flex-wrap:wrap;gap:8px}.xrc{min-width:52px;min-height:46px;padding:6px 12px;font:inherit;font-size:17px;font-weight:700;border-radius:12px;border:1px solid #c3c9d2;background:#fff;color:#1d4ed8}.xrc.on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
 #capx{margin-left:8px;font:inherit;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#1d4ed8;min-height:28px;vertical-align:middle}#capbar.ok{background:#1f7a3a;color:#fff}#capbar.low{background:#fff2cc;color:#5a4300}
 #captoast{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:60;background:#1f7a3a;color:#fff;padding:14px 18px;border-radius:12px;font-size:17px;font-weight:700;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.35);display:none;max-width:86vw}#captoast.on{display:block}
 .top .eta{flex-basis:100%;text-align:left;order:9}
@@ -581,7 +582,7 @@ body.pv #spsc #scmode{background:#dbeafe!important;border-color:#bfdbfe!importan
 <div class="shtoast" id="shtoast" role="status" aria-live="polite"></div>
 <div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
 <script>
-var APPV="2026-11-14-081312";
+var APPV="2026-11-14-081516";
 (function(){var hid=0;function go(v){var u=new URL(location.href);if(u.searchParams.get("v")===v)return false;u.searchParams.set("v",v);location.replace(u.toString());return true;}
   function chk(soft){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){
   var m=t.match(new RegExp("\\nvar AP"+"PV=\"([^\"]+)\""));if(!m||m[1]===APPV)return;
@@ -2050,17 +2051,29 @@ function capBar(){var el=document.getElementById("capbar");if(!el)return;var tg=
 var capEq=null;
 function xoutCols(i,j){var m={};SP[i].forEach(function(sp,k){if(bandOf[i][k]===j)(m[sp[1]]||(m[sp[1]]=[])).push(k);});var cs=Object.keys(m).map(Number).sort(function(a,b){return a-b;});return{cs:cs,m:m};}
 function xoutNum(i,cs,c){var L=LOTS[i];if(L.cn&&L.cn[c]!=null)return L.cn[c];return cs.indexOf(c)+1;}
-function xoutPlan(n,fromEnd){var fl=fList(),out=[];for(var q=fl.length-1;q>=0&&out.length<n;q--){var i=fl[q][0],j=fl[q][1],o=xoutCols(i,j),cs=o.cs.slice();if(fromEnd)cs.reverse();
+function xoutPlan(n,fromEnd,si){var fl=fList(),out=[],ord=[];if(si==null||si<0||si>=fl.length)si=fl.length-1;
+  for(var q=si;q>=0;q--)ord.push(q);for(q=si+1;q<fl.length;q++)ord.push(q);
+  for(var t=0;t<ord.length&&out.length<n;t++){var i=fl[ord[t]][0],j=fl[ord[t]][1],o=xoutCols(i,j),cs=o.cs.slice();if(fromEnd)cs.reverse();
     for(var a=0;a<cs.length&&out.length<n;a++){var ks=o.m[cs[a]].slice().sort(function(x,y){return SP[i][x][0]-SP[i][y][0];});for(var b=0;b<ks.length&&out.length<n;b++)if(sel[i][ks[b]]===0)out.push([i,ks[b]]);}}return out;}
-function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fList();if(!fl.length)return;var last=fl[fl.length-1],i=last[0],j=last[1],o=xoutCols(i,j),cs=o.cs;
-  var a=xoutNum(i,cs,cs[0]),z=xoutNum(i,cs,cs[cs.length-1]),rn=esc(LN(LOTS[i].name))+" row "+esc(String(bands[i][j].name));
-  var pa=xoutPlan(n,false),pz=xoutPlan(n,true);function span(pl){var rows={};pl.forEach(function(x){var jj=bandOf[x[0]][x[1]];rows[LN(LOTS[x[0]].name)+" "+bands[x[0]][jj].name]=1;});return Object.keys(rows).join(", ");}
-  var sh=ov('<h3>X out '+n.toLocaleString()+' extra spot'+(n===1?"":"s")+'</h3><p style="margin:4px 0 12px;color:var(--mut)">'+tg.toLocaleString()+' cars expected, '+CAPT.toLocaleString()+' spots open. Which end of the last row ('+rn+') should be X\'d out?</p>'+
-    '<div class="btns" style="flex-direction:column;gap:10px"><button id="xa" class="pri" style="min-height:56px;font-size:17px">Spot '+esc(String(a))+' end</button><button id="xz" class="pri" style="min-height:56px;font-size:17px">Spot '+esc(String(z))+' end</button><button id="xno">Cancel</button></div>'+
-    (span(pa).indexOf(",")>=0?'<p style="margin:10px 0 0;font-size:13px;color:var(--mut)">That is more than the last row has open, so it continues into the row before it.</p>':''));
+var XPK="blair_xpref_v1";function xpGet(){try{return JSON.parse(localStorage.getItem(XPK)||"null");}catch(e){return null;}}
+function xoutAsk(){var tg=P.target,n=CAPT-tg;if(!(tg>0)||n<=0)return;var fl=fList();if(!fl.length)return;
+  var pref=xpGet(),si=fl.length-1,end=null;
+  if(pref){for(var q=0;q<fl.length;q++){if(LOTS[fl[q][0]].name===pref.lot&&String(bands[fl[q][0]][fl[q][1]].name)===String(pref.row)){si=q;end=pref.end;break;}}}
+  var multi=fl.some(function(x){return x[0]!==fl[0][0];});
+  function rl(q){var i=fl[q][0];return (multi?esc(LN(LOTS[i].name))+" ":"")+esc(String(bands[i][fl[q][1]].name));}
+  var chips=fl.map(function(x,q){return '<button class="xrc" data-q="'+q+'">'+rl(q)+'</button>';}).join("");
+  var sh=ov('<h3>X out '+n.toLocaleString()+' extra spot'+(n===1?"":"s")+'</h3><p style="margin:4px 0 8px;color:var(--mut)">'+tg.toLocaleString()+' cars expected, '+CAPT.toLocaleString()+' spots open. Pick the row, then the end.</p>'+
+    '<div class="xrw">'+chips+'</div><div class="btns" style="flex-direction:column;gap:10px;margin-top:12px"><button id="xa" class="pri" style="min-height:56px;font-size:17px"></button><button id="xz" class="pri" style="min-height:56px;font-size:17px"></button><button id="xno">Cancel</button></div><p id="xnote" style="margin:10px 0 0;font-size:13px;color:var(--mut)"></p>');
   document.getElementById("ov").classList.add("mid");
-  sh.querySelector("#xno").onclick=ovClose;
-  sh.querySelector("#xa").onclick=function(){ovClose();xoutDo(pa);};sh.querySelector("#xz").onclick=function(){ovClose();xoutDo(pz);};}
+  function upd(){sh.querySelectorAll(".xrc").forEach(function(b){b.classList.toggle("on",+b.dataset.q===si);});
+    var i=fl[si][0],j=fl[si][1],cs=xoutCols(i,j).cs,a=xoutNum(i,cs,cs[0]),z=xoutNum(i,cs,cs[cs.length-1]),open=0;SP[i].forEach(function(sp,k){if(bandOf[i][k]===j&&sel[i][k]===0)open++;});
+    var same=pref&&si===q0;sh.querySelector("#xa").textContent="Row "+bands[i][j].name+" \u00b7 spot "+a+" end"+(same&&end==="a"?"  \u2605":"");
+    sh.querySelector("#xz").textContent="Row "+bands[i][j].name+" \u00b7 spot "+z+" end"+(same&&end==="z"?"  \u2605":"");
+    sh.querySelector("#xnote").textContent=(open<n?"Row "+bands[i][j].name+" has only "+open+" open, so it continues into the next row over. ":"")+(pref&&q0>=0?"\u2605 = what you picked last time.":"");}
+  var q0=pref&&end?si:-1;
+  sh.querySelectorAll(".xrc").forEach(function(b){b.onclick=function(){si=+b.dataset.q;upd();};});
+  function go(e){var i=fl[si][0],j=fl[si][1];try{localStorage.setItem(XPK,JSON.stringify({lot:LOTS[i].name,row:String(bands[i][j].name),end:e}));}catch(x){}ovClose();xoutDo(xoutPlan(n,e==="z",si));}
+  sh.querySelector("#xno").onclick=ovClose;sh.querySelector("#xa").onclick=function(){go("a");};sh.querySelector("#xz").onclick=function(){go("z");};upd();}
 function xoutDo(pl){if(!pl.length)return;window.__locT=Date.now();var by={};pl.forEach(function(x){(by[x[0]]||(by[x[0]]=[])).push(x[1]);});
   Object.keys(by).forEach(function(ii){var i=+ii,snap0=marksOf(i);by[ii].forEach(function(k){if(sel[i][k]===0)sel[i][k]=2;});recount(i);undo[i].push({k:"m",m:snap0,a:marksOf(i)});if(undo[i].length>30)undo[i].shift();});
   draw();save();renderRows();counts();if(typeof fUI==="function")fUI();try{if(typeof toast==="function")toast(pl.length+" spot"+(pl.length===1?"":"s")+" X'd out");}catch(e){}}
