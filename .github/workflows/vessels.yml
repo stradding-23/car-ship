@@ -1,0 +1,24 @@
+name: Update vessel list
+# Every 15 minutes (GitHub may run it a few minutes late). "Run workflow" on the Actions tab runs it now.
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vessels
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Read Dispatch Companion and save the vessel list
+        env:
+          FIREBASE_AUTH: ${{ secrets.FIREBASE_AUTH }}
+        run: node scripts/update-vessels.mjs
